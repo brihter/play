@@ -51,18 +51,21 @@
     <p>Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Duis semper arcu a dapibus efficitur. Morbi eleifend dui leo, vel sagittis nisi vestibulum at. Nulla aliquet felis eu scelerisque commodo. Etiam a tempor metus. Nulla consequat, magna non feugiat varius, tellus tellus consectetur sem, vitae tempor enim tellus at leo. Cras aliquam vitae lacus mollis dapibus. Nunc id odio feugiat, faucibus dui elementum, gravida tellus. Proin dolor lectus, viverra ut purus vitae, euismod vulputate tortor. Cras libero tellus, venenatis vel venenatis quis, cursus quis felis. Praesent pellentesque quis erat et congue. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In nec accumsan justo, id pellentesque odio.</p>
   </main>
   <script>
-    const el = document.getElementsByTagName('picture')[0]
+    (() => {
+      const el = document.getElementsByTagName('picture')[0]
 
-    const onScroll = () => {
-      const offset = window.pageYOffset/100
-      if (offset >= 4) {
-        return
+      const blur = (opts = {}) => {
+        const offset = window.pageYOffset / 100
+        if (opts.force !== true && offset >= 4) {
+          return
+        }
+
+        el.style.filter = `blur(${4 * offset}px) opacity(${(4 - offset) / 4})`
       }
 
-      el.style.filter = `blur(${4*offset}px) opacity(${(4-offset)/4})`
-    }
-
-    window.onscroll = onScroll
+      window.onscroll = blur
+      blur({ force: true })
+    })()
   </script>
 </body>
 </html>
