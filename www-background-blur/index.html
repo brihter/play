@@ -53,14 +53,20 @@
   <script>
     (() => {
       const el = document.getElementsByTagName('picture')[0]
-
+      
+      let prevOffset
       const blur = (opts = {}) => {
-        const offset = window.pageYOffset / 100
+        let offset = window.pageYOffset / 100
         if (opts.force !== true && offset >= 4) {
+          offset = 4
+        }
+
+        if (offset === prevOffset) {
           return
         }
 
         el.style.filter = `blur(${4 * offset}px) opacity(${(4 - offset) / 4})`
+        prevOffset = offset
       }
 
       window.onscroll = blur
