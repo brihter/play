@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>background blur</title>
@@ -30,13 +30,12 @@
       font-size: 22px;
       color: #fff; 
     }
-    
   </style>
 </head>
 <body>
   <header>
     <picture>
-      <img src="background.jpg">
+      <img src="background.jpg" alt="background">
     </picture>
   </header>
   <main>
@@ -53,14 +52,16 @@
   </main>
   <script>
     const el = document.getElementsByTagName('picture')[0]
+
     const onScroll = () => {
-      let offset = window.pageYOffset/100
+      const offset = window.pageYOffset/100
       if (offset >= 4) {
         return
       }
-      el.style.opacity = (4-offset)/4
-      el.style.filter = `blur(${4*offset}px)`
+
+      el.style.filter = `blur(${4*offset}px) opacity(${(4-offset)/4})`
     }
+
     window.onscroll = onScroll
   </script>
 </body>
