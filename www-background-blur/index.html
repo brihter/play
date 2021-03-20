@@ -26,16 +26,27 @@
 
     main {
       position: relative;
-      width: 50vw;
+      width: 40vw;
       margin: 0 auto;
       text-align: left;
-      font-size: 1em;
+      font-size: 1.2em;
+      line-height: 1.3em;
       color: #fff; 
     }
 
-    @media only screen and (max-width: 600px) {
+    @media only screen and (max-width: 768px) {
       main {
         width: 80vw;
+        font-size: 1em;
+        line-height: 1.1em;
+      }
+    }
+
+    @media only screen and (max-width: 1024px) {
+      main {
+        width: 60vw;
+        font-size: 1em;
+        line-height: 1.1em;
       }
     }
 
