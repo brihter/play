@@ -16,7 +16,8 @@
   <script>
     (async () => {
       let ctx = await load('nyc.png')
-      ctx = shred(ctx)
+      let shredded = shred(ctx)
+      render(shredded, 'shredded')
     })()
   </script>
 </body>

@@ -4,22 +4,26 @@ const shred = (ctx, opts) => {
   }, opts)
 
   const cut = (ctx) => {
-    const steps = ctx.canvas.width / opts.width
+    const width = ctx.canvas.width
+    const height = ctx.canvas.height
+    const steps = width / opts.width
+
     return Array.from(Array(steps).keys())
-      .map((el, i) => ctx.getImageData(i * opts.width, 0, i * opts.width + opts.width, ctx.canvas.height))
-  }
-  
-  const shuffle = (strips) => {
-    return strips.sort(() => 0.5 - Math.random())
-  }
-  
-  const write = (strips, ctx) => {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    strips.forEach((strip, i) => ctx.putImageData(strip, i * opts.width, 0))
-    return ctx
+      .map((el, i) => {
+        const offset = i * opts.width
+        const chunk = ctx.getImageData(offset, 0, offset + opts.width, height)
+
+        return {
+          data: chunk,
+          width: opts.width
+        }
+      })
   }
 
-  let strips = cut(ctx)
-  strips = shuffle(strips)
-  return write(strips, ctx)
+  const shuffle = (buffer) => {
+    return buffer.sort(() => 0.5 - Math.random())
+  }
+
+  const buffer = cut(ctx)
+  return shuffle(buffer)
 }
