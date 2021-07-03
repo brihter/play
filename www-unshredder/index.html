@@ -1,16 +1,61 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="Bostjan Rihter">
   <title>image (un)shredder</title>
 </head>
+
 <body>
-  <p>Original:</p>
-  <img src="nyc.png" alt="nyc" />
   <!--
   <p>Aerial shot of the <a href="https://unsplash.com/photos/BAfzYlMlQRs" target="_blank">New York Skyline</a> by <a href="https://unsplash.com/@carlsolder" target="_blank">Carl Solder</a></p>
   -->
+  <p>Shredded:</p>
+  <canvas id="shredded" width="800" height="500"></canvas>
+
+  <script>
+    const shred = async (image) => {
+      const WIDTH = 5
+
+      const load = (image) => {
+        const canvas = document.getElementById('shredded')
+        const ctx = canvas.getContext('2d')
+        return new Promise((resolve) => {
+          const img = new Image()
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, img.width, img.height)
+            resolve(ctx)
+          }
+          img.src = image
+        })
+      }
+
+      const cut = (ctx) => {
+        const steps = ctx.canvas.width / WIDTH
+
+        return Array.from(Array(steps).keys())
+          .map((el, i) => ctx.getImageData(i * WIDTH, 0, i * WIDTH + WIDTH, ctx.canvas.height))
+      }
+
+      const shuffle = (strips) => strips.sort(() => 0.5 - Math.random())
+
+      const write = (strips, ctx) => {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+        strips.forEach((strip, i) => ctx.putImageData(strip, i * WIDTH, 0))
+      }
+
+      const ctx = await load(image)
+      let strips = cut(ctx)
+      strips = shuffle(strips)
+      write(strips, ctx)
+    }
+
+    (() => {
+      shred('nyc.png')
+    })()
+  </script>
 </body>
+
 </html>
