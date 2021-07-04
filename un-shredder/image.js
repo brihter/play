@@ -8,6 +8,7 @@ const load = (image) => {
       canvas.width = img.width
       canvas.height = img.height
       ctx.drawImage(img, 0, 0, img.width, img.height)
+      canvas.remove()
       resolve(ctx)
     }
     img.src = image

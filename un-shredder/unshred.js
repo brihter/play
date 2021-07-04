@@ -1,6 +1,6 @@
 const unshred = (ctx, opts) => {
   opts = Object.assign({
-    width: 50
+    width: 200
   }, opts)
 
   const width = ctx.canvas.width
@@ -43,9 +43,20 @@ const unshred = (ctx, opts) => {
     return results
   }
 
-  const strips = cut(ctx)
-  const pairs = compare(strips)
-  console.log(pairs)
+  // todo
+  const order = (strips, distances) => {
+    return strips
+  }
 
-  return ctx
+  const draw = (strips) => {
+    const stripWidth = strips[0].width
+    ctx.clearRect(0, 0, width, height)
+    strips.forEach((strip, i) => ctx.putImageData(strip, i * stripWidth, 0))
+    return ctx
+  }
+
+  let strips = cut(ctx)
+  const distances = compare(strips)
+  strips = order(strips, distances)
+  return draw(strips)
 }
