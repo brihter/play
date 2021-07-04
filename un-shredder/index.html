@@ -54,7 +54,7 @@
 
       const onUnshred = async () => {
         let ctx = await load('nyc.png')
-        //ctx = shred(ctx)
+        ctx = shred(ctx)
         ctx = unshred(ctx)
         render(ctx, 'canvas')
       }

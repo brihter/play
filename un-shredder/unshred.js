@@ -1,6 +1,6 @@
 const unshred = (ctx, opts) => {
   opts = Object.assign({
-    width: 4
+    width: 50
   }, opts)
 
   const width = ctx.canvas.width
@@ -16,9 +16,36 @@ const unshred = (ctx, opts) => {
       })
   }
 
-  let strips = cut(ctx)
-  const x = diff(strips[0], strips[1])
-  console.log(x)
+  const compare = (strips) => {
+    let i
+    let j
+    let s1
+    let s2
+
+    const results = []
+    for (i=0; i<strips.length; ++i) {
+      s1 = strips[i]
+      for (j=0; j<strips.length; ++j) {
+        s2 = strips[j]
+
+        if (i === j) {
+          continue
+        }
+
+        results.push({
+          index1: i,
+          index2: j,
+          d: diff(s1, s2)
+        })
+      }
+    }
+
+    return results
+  }
+
+  const strips = cut(ctx)
+  const pairs = compare(strips)
+  console.log(pairs)
 
   return ctx
 }

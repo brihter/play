@@ -21,12 +21,48 @@ const render = (sourceCtx, target) => {
 }
 
 const diff = (img1, img2) => {
-  return pixelmatch(
-    img1.data,
-    img2.data,
+  const canvas = document.createElement('canvas')
+  canvas.style = 'display:none'
+  canvas.width = img1.width
+  canvas.height = img1.height
+  
+  const ctx = canvas.getContext('2d')
+
+  const crop = (img, direction) => {
+    const edgeWidth = 1
+
+    ctx.putImageData(img, 0, 0)
+
+    if (direction === 'left') {
+      return ctx.getImageData(0, 0, edgeWidth, img.height)
+    }
+
+    if (direction === 'right') {
+      return ctx.getImageData(img.width-edgeWidth, 0, edgeWidth, img.height)
+    }
+  }
+
+  const right = (img) => {
+    return crop(img, 'right')
+  }
+
+  const left = (img) => {
+    return crop(img, 'left')
+  }
+
+  const rightEdge = right(img1)
+  const leftEdge = left(img2)
+
+  const diff = pixelmatch(
+    rightEdge.data,
+    leftEdge.data,
     null,
-    img1.width,
-    img1.height,
+    leftEdge.width,
+    leftEdge.height,
     { threshold: 0.1 }
   )
+
+  canvas.remove()
+
+  return diff
 }
