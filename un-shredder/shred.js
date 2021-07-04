@@ -12,7 +12,7 @@ const shred = (ctx, opts) => {
     return Array.from(Array(steps).keys())
       .map((el, i) => {
         const offset = i * opts.width
-        return ctx.getImageData(offset, 0, offset + opts.width, height)
+        return ctx.getImageData(offset, 0, opts.width, height)
       })
   }
 
@@ -21,7 +21,7 @@ const shred = (ctx, opts) => {
   }
 
   const draw = (strips) => {
-    const stripWidth = Math.min(...strips.map(s => s.width))
+    const stripWidth = strips[0].width
     ctx.clearRect(0, 0, width, height)
     strips.forEach((strip, i) => ctx.putImageData(strip, i * stripWidth, 0))
     return ctx

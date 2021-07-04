@@ -19,3 +19,14 @@ const render = (sourceCtx, target) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   ctx.drawImage(sourceCtx.canvas, 0, 0)
 }
+
+const diff = (img1, img2) => {
+  return pixelmatch(
+    img1.data,
+    img2.data,
+    null,
+    img1.width,
+    img1.height,
+    { threshold: 0.1 }
+  )
+}
