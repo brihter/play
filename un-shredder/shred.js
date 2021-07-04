@@ -1,6 +1,6 @@
 const shred = (ctx, opts) => {
   opts = Object.assign({
-    width: 10
+    width: 4
   }, opts)
 
   const width = ctx.canvas.width
