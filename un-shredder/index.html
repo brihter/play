@@ -8,12 +8,14 @@
   <title>image (un)shredder</title>
   <script src="image.js"></script>
   <script src="shred.js"></script>
+  <script src="unshred.js"></script>
 </head>
 
 <body>
   <p>
     <button id="btn-original">Original</button>
     <button id="btn-shred">Shred</button>
+    <button id="btn-unshred">Unshred</button>
   </p>
 
   <canvas id="canvas" width="800" height="450"></canvas>
@@ -34,8 +36,16 @@
         render(ctx, 'canvas')
       }
 
+      const onUnshred = async () => {
+        let ctx = await load('nyc.png')
+        ctx = shred(ctx)
+        ctx = unshred(ctx)
+        render(ctx, 'canvas')
+      }
+
       document.getElementById('btn-original').addEventListener('click', onOriginal)
       document.getElementById('btn-shred').addEventListener('click', onShred)
+      document.getElementById('btn-unshred').addEventListener('click', onUnshred)
 
       onOriginal()
     })()
