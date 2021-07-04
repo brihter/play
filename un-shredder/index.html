@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Bostjan Rihter">
+  <title>image (un)shredder</title>
+  <script src="image.js"></script>
+  <script src="shred.js"></script>
+</head>
+
+<body>
+  <p>
+    <button id="btn-original">Original</button>
+    <button id="btn-shred">Shred</button>
+  </p>
+
+  <canvas id="canvas" width="800" height="450"></canvas>
+
+  <p>Original shot of the <a href="https://unsplash.com/photos/BAfzYlMlQRs" target="_blank">New York Skyline</a> by <a
+      href="https://unsplash.com/@carlsolder" target="_blank">Carl Solder</a>.</p>
+  
+  <script>
+    (() => {
+      const onOriginal = async () => {
+        let ctx = await load('nyc.png')
+        render(ctx, 'canvas')
+      }
+
+      const onShred = async () => {
+        let ctx = await load('nyc.png')
+        ctx = shred(ctx)
+        render(ctx, 'canvas')
+      }
+
+      document.getElementById('btn-original').addEventListener('click', onOriginal)
+      document.getElementById('btn-shred').addEventListener('click', onShred)
+
+      onOriginal()
+    })()
+  </script>
+</body>
+
+</html>
