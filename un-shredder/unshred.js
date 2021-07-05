@@ -1,6 +1,6 @@
 const unshred = (ctx, opts) => {
   opts = Object.assign({
-    width: 20
+    width: 10
   }, opts)
 
   const width = ctx.canvas.width
@@ -37,10 +37,9 @@ const unshred = (ctx, opts) => {
             results[i] = []
           }
 
-          const result = diff(s1, s2)
           results[i].push({
             index: j,
-            diff: result.diff
+            diff: diff(s1, s2)
           })
         }
       }

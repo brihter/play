@@ -64,8 +64,5 @@ const diff = (img1, img2) => {
 
   canvas.remove()
 
-  return {
-    diff,
-    surface: leftEdge.width * leftEdge.height
-  }
+  return diff
 }
