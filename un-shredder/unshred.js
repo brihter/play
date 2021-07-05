@@ -1,6 +1,6 @@
 const unshred = (ctx, opts) => {
   opts = Object.assign({
-    width: 200
+    width: 50
   }, opts)
 
   const width = ctx.canvas.width
@@ -16,36 +16,100 @@ const unshred = (ctx, opts) => {
       })
   }
 
-  const compare = (strips) => {
-    let i
-    let j
-    let s1
-    let s2
+  const order = (strips) => {
+    const compare = () => {
+      let i
+      let j
+      let s1
+      let s2
+  
+      const results = {}
+      for (i=0; i<strips.length; ++i) {
+        s1 = strips[i]
+        for (j=0; j<strips.length; ++j) {
+          s2 = strips[j]
+  
+          if (i === j) {
+            continue
+          }
+  
+          if (!results[i]) {
+            results[i] = []
+          }
 
-    const results = []
-    for (i=0; i<strips.length; ++i) {
-      s1 = strips[i]
-      for (j=0; j<strips.length; ++j) {
-        s2 = strips[j]
-
-        if (i === j) {
-          continue
+          const result = diff(s1, s2)
+          results[i].push({
+            index: j,
+            diff: result.diff
+          })
         }
-
-        results.push({
-          index1: i,
-          index2: j,
-          d: diff(s1, s2)
-        })
       }
+  
+      return results
     }
 
-    return results
-  }
+    const match = (scores) => {
+      return Object.keys(scores).map(index => {
+        return scores[index].reduce((acc, { index, diff, surface }) => {
+          if (diff < acc.diff) {
+            acc.diff = diff
+            acc.index = index
+          }
 
-  // todo
-  const order = (strips, distances) => {
-    return strips
+          return acc
+        }, {
+          diff: Number.MAX_SAFE_INTEGER,
+          index: -1,
+          first: false,
+          last: false
+        })
+      })
+    }
+
+    const markLast = (matches) => {
+      const diffs = matches.map(m => m.diff)
+      const threshold = math.mean(diffs) + math.std(diffs)
+      return matches.map(m => {
+        m.last = m.diff > threshold ? true : false
+        return m
+      })
+    }
+
+    const markFirst = (matches) => {
+      const pointers = matches.filter(m => m.last === false).map(m => m.index)
+
+      const a = new Set(matches.keys())
+      const b = new Set(pointers)
+
+      const index = [...a].filter(x => !b.has(x)).pop()
+      matches[index].first = true
+
+      return matches
+    }
+
+    const move = (matches) => {
+      let index = matches.findIndex(m => m.first === true)
+      let current = matches[index]
+      
+      const results = []
+      while (!current.last) {
+        results.push(strips[index])
+        index = current.index
+        current = matches[index]
+      }
+
+      results.push(strips[index])
+
+      return results
+    }
+
+    const scores = compare()
+
+    let matches = match(scores)
+    matches = markLast(matches)
+    matches = markFirst(matches)
+
+    return move(matches)
   }
 
   const draw = (strips) => {
@@ -56,7 +120,6 @@ const unshred = (ctx, opts) => {
   }
 
   let strips = cut(ctx)
-  const distances = compare(strips)
-  strips = order(strips, distances)
+  strips = order(strips)
   return draw(strips)
 }

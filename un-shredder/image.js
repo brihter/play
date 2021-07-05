@@ -31,7 +31,6 @@ const diff = (img1, img2) => {
 
   const crop = (img, direction) => {
     const edgeWidth = 1
-
     ctx.putImageData(img, 0, 0)
 
     if (direction === 'left') {
@@ -51,8 +50,8 @@ const diff = (img1, img2) => {
     return crop(img, 'left')
   }
 
-  const rightEdge = right(img1)
   const leftEdge = left(img2)
+  const rightEdge = right(img1)
 
   const diff = pixelmatch(
     rightEdge.data,
@@ -65,5 +64,8 @@ const diff = (img1, img2) => {
 
   canvas.remove()
 
-  return diff
+  return {
+    diff,
+    surface: leftEdge.width * leftEdge.height
+  }
 }
