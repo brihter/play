@@ -77,19 +77,20 @@
       let prevOffset
       const blur = (opts = {}) => {
         let offset = window.pageYOffset / 100
-        if (opts.force !== true && offset >= 4) {
-          offset = 4
+        if (opts.force !== true && offset >= 8) {
+          offset = 8
         }
 
         if (offset === prevOffset) {
           return
         }
 
-        el.style.filter = `blur(${4 * offset}px) opacity(${(4 - offset) / 4})`
+        el.style.filter = `blur(${2 * offset}px) opacity(${(16 - offset) / 16})`
         prevOffset = offset
       }
 
       window.onscroll = blur
+      
       blur({ force: true })
     })()
   </script>
