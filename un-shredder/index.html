@@ -13,6 +13,7 @@
       text-decoration: none;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
   <script src="https://bundle.run/pixelmatch@5.2.1"></script>
   <script src="image.js"></script>
   <script src="shred.js"></script>
@@ -33,9 +34,9 @@
   <p>Original shot of the <a href="https://unsplash.com/photos/BAfzYlMlQRs" target="_blank">New York Skyline</a> by <a href="https://unsplash.com/@carlsolder" target="_blank">Carl Solder</a>.</p>
   
   <script>
-  (() => {
+    (() => {
       const onReset = async () => {
-        let ctx = await load('nyc.png')
+        let ctx = await load('img/nyc.png')
         render(ctx, 'canvas')
       }
 

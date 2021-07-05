@@ -21,14 +21,7 @@ const render = (sourceCtx, target) => {
   ctx.drawImage(sourceCtx.canvas, 0, 0)
 }
 
-const diff = (img1, img2) => {
-  const canvas = document.createElement('canvas')
-  canvas.style = 'display:none'
-  canvas.width = img1.width
-  canvas.height = img1.height
-  
-  const ctx = canvas.getContext('2d')
-
+const diffOne = (img1, img2, ctx) => {
   const crop = (img, direction) => {
     const edgeWidth = 1
     ctx.putImageData(img, 0, 0)
@@ -38,22 +31,14 @@ const diff = (img1, img2) => {
     }
 
     if (direction === 'right') {
-      return ctx.getImageData(img.width-edgeWidth, 0, edgeWidth, img.height)
+      return ctx.getImageData(img.width - edgeWidth, 0, edgeWidth, img.height)
     }
   }
 
-  const right = (img) => {
-    return crop(img, 'right')
-  }
+  const leftEdge = crop(img2, 'left')
+  const rightEdge = crop(img1, 'right')
 
-  const left = (img) => {
-    return crop(img, 'left')
-  }
-
-  const leftEdge = left(img2)
-  const rightEdge = right(img1)
-
-  const diff = pixelmatch(
+  return pixelmatch(
     rightEdge.data,
     leftEdge.data,
     null,
@@ -61,8 +46,27 @@ const diff = (img1, img2) => {
     leftEdge.height,
     { threshold: 0.1 }
   )
+}
+
+const diff = (pairs) => {
+  const canvas = document.createElement('canvas')
+  canvas.style = 'display:none'
+
+  const img = pairs[0].strip1
+  canvas.width = img.width
+  canvas.height = img.height
+
+  const ctx = canvas.getContext('2d')
+
+  pairs = pairs.map((pair) => {
+    return {
+      index1: pair.index1,
+      index2: pair.index2,
+      diff: diffOne(pair.strip1, pair.strip2, ctx)
+    }
+  })
 
   canvas.remove()
 
-  return diff
+  return pairs
 }
