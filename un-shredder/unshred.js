@@ -1,6 +1,6 @@
 const unshred = (ctx, opts) => {
   opts = Object.assign({
-    width: 50
+    width: 20
   }, opts)
 
   const width = ctx.canvas.width
@@ -22,17 +22,17 @@ const unshred = (ctx, opts) => {
       let j
       let s1
       let s2
-  
+
       const results = {}
-      for (i=0; i<strips.length; ++i) {
+      for (i = 0; i < strips.length; ++i) {
         s1 = strips[i]
-        for (j=0; j<strips.length; ++j) {
+        for (j = 0; j < strips.length; ++j) {
           s2 = strips[j]
-  
+
           if (i === j) {
             continue
           }
-  
+
           if (!results[i]) {
             results[i] = []
           }
@@ -44,7 +44,7 @@ const unshred = (ctx, opts) => {
           })
         }
       }
-  
+
       return results
     }
 
@@ -68,11 +68,10 @@ const unshred = (ctx, opts) => {
 
     const markLast = (matches) => {
       const diffs = matches.map(m => m.diff)
-      const threshold = math.mean(diffs) + math.std(diffs)
-      return matches.map(m => {
-        m.last = m.diff > threshold ? true : false
-        return m
-      })
+
+      const index = diffs.indexOf(Math.max(...diffs))
+      matches[index].last = true
+      return matches
     }
 
     const markFirst = (matches) => {
@@ -83,14 +82,13 @@ const unshred = (ctx, opts) => {
 
       const index = [...a].filter(x => !b.has(x)).pop()
       matches[index].first = true
-
       return matches
     }
 
     const move = (matches) => {
       let index = matches.findIndex(m => m.first === true)
       let current = matches[index]
-      
+
       const results = []
       while (!current.last) {
         results.push(strips[index])
@@ -108,6 +106,7 @@ const unshred = (ctx, opts) => {
     let matches = match(scores)
     matches = markLast(matches)
     matches = markFirst(matches)
+    //console.log(matches)
 
     return move(matches)
   }

@@ -14,7 +14,6 @@
     }
   </style>
   <script src="https://bundle.run/pixelmatch@5.2.1"></script>
-  <script src="https://unpkg.com/mathjs@9.4.3/lib/browser/math.js"></script>
   <script src="image.js"></script>
   <script src="shred.js"></script>
   <script src="unshred.js"></script>
@@ -24,7 +23,7 @@
   <h1>image (un)shredder</h1>
 
   <p>
-    <button id="btn-original">Original</button>
+    <button id="btn-reset">Reset</button>
     <button id="btn-shred">Shred</button>
     <button id="btn-unshred">Unshred</button>
   </p>
@@ -41,30 +40,27 @@
   </ul>
   
   <script>
-    (() => {
-      const onOriginal = async () => {
+  (() => {
+      const onReset = async () => {
         let ctx = await load('nyc.png')
         render(ctx, 'canvas')
       }
 
       const onShred = async () => {
-        let ctx = await load('nyc.png')
+        ctx = document.getElementById('canvas').getContext('2d')
         ctx = shred(ctx)
-        render(ctx, 'canvas')
       }
 
       const onUnshred = async () => {
-        let ctx = await load('nyc.png')
-        ctx = shred(ctx)
+        ctx = document.getElementById('canvas').getContext('2d')
         ctx = unshred(ctx)
-        render(ctx, 'canvas')
       }
 
-      document.getElementById('btn-original').addEventListener('click', onOriginal)
+      document.getElementById('btn-reset').addEventListener('click', onReset)
       document.getElementById('btn-shred').addEventListener('click', onShred)
       document.getElementById('btn-unshred').addEventListener('click', onUnshred)
 
-      onOriginal()
+      onReset()
     })()
   </script>
 </body>
