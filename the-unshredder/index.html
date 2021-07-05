@@ -22,41 +22,35 @@
 
 <body>
   <h1>The Unshredder</h1>
-  
-  <p>Inspired by the <a href="https://instagram-engineering.com/instagram-engineering-challenge-the-unshredder-7ef3f7323ab1" target="_blank">Instagram Engineering Challenge.</a></p>
-
+  <p>Inspired by the Instagram <a href="https://instagram-engineering.com/instagram-engineering-challenge-the-unshredder-7ef3f7323ab1" target="_blank">engineering challenge.</a></p>
   <p>
     <button id="btn-shred">Shred</button>
     <button id="btn-unshred">Unshred</button>
-    <button id="btn-reset">Reset</button>
   </p>
-
   <canvas id="canvas" width="800" height="450"></canvas>
-
   <p>Original shot of the <a href="https://unsplash.com/photos/BAfzYlMlQRs" target="_blank">New York Skyline</a> by <a href="https://unsplash.com/@carlsolder" target="_blank">Carl Solder</a>.</p>
-  
   <script>
-    (() => {
-      const onReset = async () => {
-        let ctx = await load('img/nyc.png')
+    (async () => {
+      const init = async () => {
+        const ctx = await load('img/nyc.png')
         render(ctx, 'canvas')
       }
 
-      const onShred = async () => {
-        ctx = document.getElementById('canvas').getContext('2d')
-        ctx = shred(ctx)
+      const onShred = () => {
+        const ctx = document.getElementById('canvas').getContext('2d')
+        shred(ctx)
       }
 
-      const onUnshred = async () => {
-        ctx = document.getElementById('canvas').getContext('2d')
-        ctx = unshred(ctx)
+      const onUnshred = () => {
+        const ctx = document.getElementById('canvas').getContext('2d')
+        unshred(ctx)
       }
 
-      document.getElementById('btn-reset').addEventListener('click', onReset)
       document.getElementById('btn-shred').addEventListener('click', onShred)
       document.getElementById('btn-unshred').addEventListener('click', onUnshred)
 
-      onReset()
+      await init()
+      onShred()
     })()
   </script>
 </body>
