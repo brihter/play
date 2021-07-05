@@ -23,7 +23,7 @@ const unshred = (ctx, opts) => {
       let s1
       let s2
 
-      const results = {}
+      const pairs = []
       for (i = 0; i < strips.length; ++i) {
         s1 = strips[i]
         for (j = 0; j < strips.length; ++j) {
@@ -33,47 +33,43 @@ const unshred = (ctx, opts) => {
             continue
           }
 
-          if (!results[i]) {
-            results[i] = []
-          }
-
-          results[i].push({
-            index: j,
-            diff: diff(s1, s2)
+          pairs.push({
+            index1: i,
+            index2: j,
+            strip1: s1,
+            strip2: s2
           })
         }
       }
 
-      return results
+      return diff(pairs)
     }
 
     const match = (scores) => {
-      return Object.keys(scores).map(index => {
-        return scores[index].reduce((acc, { index, diff, surface }) => {
-          if (diff < acc.diff) {
-            acc.diff = diff
-            acc.index = index
-          }
+      return _.chain(scores)
+        .groupBy('index1')
+        .map((candidates) => {
+          const sorted = _.orderBy(candidates, ['diff'], ['asc'])
+          const winner = sorted[0]
 
-          return acc
-        }, {
-          diff: Number.MAX_SAFE_INTEGER,
-          index: -1,
-          first: false,
-          last: false
+          return {
+            diff: winner.diff,
+            index: winner.index2,
+            first: false,
+            last: false
+          }
         })
-      })
+        .value()
     }
 
-    const markLast = (matches) => {
+    const last = (matches) => {
       const diffs = matches.map(m => m.diff)
-
       const index = diffs.indexOf(Math.max(...diffs))
       matches[index].last = true
       return matches
     }
 
-    const markFirst = (matches) => {
+    const first = (matches) => {
       const pointers = matches.filter(m => m.last === false).map(m => m.index)
 
       const a = new Set(matches.keys())
@@ -103,9 +99,8 @@ const unshred = (ctx, opts) => {
     const scores = compare()
 
     let matches = match(scores)
-    matches = markLast(matches)
-    matches = markFirst(matches)
-    //console.log(matches)
+    matches = last(matches)
+    matches = first(matches)
 
     return move(matches)
   }
