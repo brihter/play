@@ -1,0 +1,11 @@
+{
+  "name": "encore",
+  "version": "1.0.0",
+  "description": "``` sudo add-apt-repository ppa:chris-needham/ppa sudo apt-get update sudo apt-get install audiowaveform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

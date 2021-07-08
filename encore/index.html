@@ -9,14 +9,90 @@
   <style>
     a,
     a:visited {
-      color:blue;
+      color: blue;
       text-decoration: none;
     }
+
+    /*peaks*/
+    #zoomview,
+    #overview {
+      width: 100%;
+      margin: 12px auto;
+      background-color: #fefefe;
+      border: 1px solid #eaeaea;
+    }
+
+    #zoomview {
+      height: 200px;
+    }
+
+    #overview {
+      height: 50px;
+    }
+
+    /* #peaks-control {
+      display: flex;
+      align-items: center;
+    }
+
+    #controls {
+      flex: 1;
+      margin-left: 1em;
+    } */
+
+    .layers div {
+      display: block;
+    }
+
+    .layers input {
+      margin: .4rem;
+    }
+
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/peaks.js@0.26.0/peaks.min.js"></script>
 </head>
 
 <body>
   <h1>Encore</h1>
+
+  <div class="player">
+    <div id="zoomview"></div>
+    <div id="overview"></div>
+    <audio>
+      <source src="sample.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <div class="layers">
+    <p>Layers:</p>
+    <div><input type="checkbox" name="beats"><label for="beats">Beats</label></div>
+    <div><input type="checkbox" name="segments"><label for="segments">Segments</label></div>
+    <div><input type="checkbox" name="chroma"><label for="chroma">Chroma</label></div>
+  </div>
+
+  <p class="notes">
+    Track <a href="https://www.beatport.com/track/just-lay-back/1666351" target="_blank">Just Lay Back (Ittetsu & Jun Akimoto Remix)</a> by <a href="https://www.beatport.com/artist/yoshitaca/94210" target="_blank">Yoshitaca</a>.
+  </p>
+
+  <script>
+    ((Peaks) => {
+      const options = {
+        containers: {
+          overview: document.getElementById('overview'),
+          zoomview: document.getElementById('zoomview')
+        },
+        mediaElement: document.querySelector('audio'),
+        dataUri: {
+          arraybuffer: 'sample.dat'
+        }
+      }
+
+      Peaks.init(options, (err, peaks) => {
+        // ...
+      })
+    })(peaks)
+  </script>
 </body>
 
 </html>
