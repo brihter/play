@@ -13,8 +13,8 @@ filename = args.filename
 
 # segments
 y, sr = librosa.load(filename)
-feature = librosa.feature.rms(y=y, frame_length=1024) # group by
-bounds = librosa.segment.agglomerative(feature, 20)
+feature = librosa.feature.rms(y=y, frame_length=4096) # group by
+bounds = librosa.segment.agglomerative(feature, 10)
 output = librosa.frames_to_time(bounds, sr=sr).tolist()
 
 # stdout
