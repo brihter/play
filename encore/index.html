@@ -21,7 +21,7 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/peaks.js@0.26.0/peaks.min.js"></script>
-  <!-- player -->
+  
   <link rel="stylesheet" href="player/player.css" />
   <script src="player/player.js"></script>
 </head>
@@ -31,13 +31,6 @@
     <h2>Yoshitaca</h2>
     <h2>Just Lay Back (Ittetsu & Jun Akimoto Remix)</h2>
     
-    <div class="controls top">
-      <div class="group right">
-        <button style="width:70px;"><</button>
-        <button style="width:70px;">></button>
-      </div>
-    </div>
-
     <div id="zoomview"></div>
     <div id="overview"></div>
 
@@ -48,7 +41,7 @@
 
     <div class="controls bottom">
       <div class="group">
-        <button class="active">></button>
+        <button>></button>
       </div>
 
       <div class="group">
@@ -96,20 +89,20 @@
     const init = ({ Peaks, data }) => {
       const beats = data.beats.map(b => ({
         time: b,
-        //color: '#ccc',
+        color: 'rgba(255,255,255,0.35)',
         label: 'Beats'
       }))
 
       const segments = data.segments.map(s => ({
         time: s,
-        //color: '#999',
+        color: 'rgba(255,255,255,0.9)',
         label: 'Segments',
         editable: true
       }))
 
       const points = [
-        // ...beats,
-        // ...segments
+        ...beats,
+        ...segments
       ]
 
       return new Promise((resolve, reject) => {
@@ -122,10 +115,11 @@
           dataUri: {
             arraybuffer: 'sample.dat'
           },
-
-          // zoomWaveformColor: '#CD5C5C',
-          overviewWaveformColor: 'red',
-          // overviewHighlightColor: 'red',
+          showPlayheadTime: false,
+          zoomWaveformColor: 'rgba(30, 144, 255, 0.85)',
+          overviewWaveformColor: 'rgba(255, 255, 255, 0.5)',
+          axisGridlineColor: 'rgba(0,0,0,0)', // hide time markers
+          axisLabelColor: 'rgba(0,0,0,0)', // hide time
           points
         }, (err, peaks) => {
           if (err) {

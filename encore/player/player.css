@@ -24,24 +24,14 @@
   display: flex;
 }
 
-.player .controls.top {
-  background: #131313;
-}
-
-.player .controls.top button {
-  height: 20px;
-  line-height: 20px;
-  border: 0 none;
-}
-
 .player .controls.bottom {
   justify-content: space-between;
   padding: 4px;
 }
 
 .player .controls.bottom button {
-  /* height: 36px; */
-  line-height: 36px;
+  height: 36px;
+  line-height: 32px;
   border: 1px solid #171717;
   width: 48px;
   font-weight: bold;
@@ -55,10 +45,6 @@
   color: #acacac;
   cursor: pointer;
   border:1px solid #161717;
-}
-
-.player .controls .group {
-  flex:auto;
 }
 
 .player #zoomview,
