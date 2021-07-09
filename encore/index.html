@@ -30,7 +30,8 @@
       height: 50px;
     }
 
-    /* #peaks-control {
+    /*
+    #peaks-control {
       display: flex;
       align-items: center;
     }
@@ -38,7 +39,8 @@
     #controls {
       flex: 1;
       margin-left: 1em;
-    } */
+    }
+    */
 
     .layers div {
       display: block;
@@ -76,21 +78,57 @@
   </p>
 
   <script>
-    ((Peaks) => {
-      const options = {
-        containers: {
-          overview: document.getElementById('overview'),
-          zoomview: document.getElementById('zoomview')
-        },
-        mediaElement: document.querySelector('audio'),
-        dataUri: {
-          arraybuffer: 'sample.dat'
-        }
+    const data = async () => {
+      const beats = async () => {
+        const r = await fetch('beats.json')
+        return r.json()
       }
 
-      Peaks.init(options, (err, peaks) => {
-        // ...
+      return {
+        beats: await beats()
+      }
+    }
+
+    const init = ({ Peaks, data }) => {
+      const beats = data.beats.map(b => ({
+        time: b,
+        label: 'Beats'
+      }))
+
+      const points = [
+        ...beats
+      ]
+
+      return new Promise((resolve, reject) => {
+        Peaks.init({
+          containers: {
+            overview: document.getElementById('overview'),
+            zoomview: document.getElementById('zoomview')
+          },
+          mediaElement: document.querySelector('audio'),
+          dataUri: {
+            arraybuffer: 'sample.dat'
+          },
+          points
+        }, (err, peaks) => {
+          if (err) {
+            return reject(err)
+          }
+
+          resolve(peaks)
+        })
       })
+    }
+
+    (function(Peaks) {
+      const main = async () => {
+        await init({
+          Peaks,
+          data: await data()
+        })
+      }
+
+      main().catch(console.log)
     })(peaks)
   </script>
 </body>
