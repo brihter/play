@@ -11,11 +11,11 @@ parser.add_argument("-i", help="input file", type=str, dest="filename")
 args = parser.parse_args()
 filename = args.filename
 
-# beat tracking
-# y, sr = librosa.load(filename, duration=10)
+# segments
 y, sr = librosa.load(filename)
-tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
-beats = librosa.frames_to_time(beats, sr=sr)
+feature = librosa.feature.rms(y=y, frame_length=1024) # group by
+bounds = librosa.segment.agglomerative(feature, 20)
+output = librosa.frames_to_time(bounds, sr=sr).tolist()
 
 # stdout
-print(json.dumps(beats.tolist()))
+print(json.dumps(output))

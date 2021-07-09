@@ -7,6 +7,11 @@
   <meta name="author" content="Bostjan Rihter">
   <title>Encore</title>
   <style>
+    body {
+      margin: 10px;
+      padding: 10px;
+    }
+
     a,
     a:visited {
       color: blue;
@@ -23,7 +28,7 @@
     }
 
     #zoomview {
-      height: 200px;
+      height: 100px;
     }
 
     #overview {
@@ -55,8 +60,6 @@
 </head>
 
 <body>
-  <h1>Encore</h1>
-
   <div class="player">
     <div id="zoomview"></div>
     <div id="overview"></div>
@@ -84,19 +87,34 @@
         return r.json()
       }
 
+      const segments = async () => {
+        const r = await fetch('segments.json')
+        return r.json()
+      }
+
       return {
-        beats: await beats()
+        beats: await beats(),
+        segments: await segments()
       }
     }
 
     const init = ({ Peaks, data }) => {
       const beats = data.beats.map(b => ({
         time: b,
+        color: '#ccc',
         label: 'Beats'
       }))
 
+      const segments = data.segments.map(s => ({
+        time: s,
+        color: '#999',
+        label: 'Segments',
+        editable: true
+      }))
+
       const points = [
-        ...beats
+        ...beats,
+        ...segments
       ]
 
       return new Promise((resolve, reject) => {
@@ -109,6 +127,8 @@
           dataUri: {
             arraybuffer: 'sample.dat'
           },
+          zoomWaveformColor: '#CD5C5C',
+          overviewHighlightColor: 'rgba(0,0,0,0)',
           points
         }, (err, peaks) => {
           if (err) {

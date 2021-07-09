@@ -15,4 +15,5 @@ pip install librosa
 ```
 audiowaveform -i sample.mp3 -o waveform.dat -b 8
 python beats.py -i sample.mp3 > beats.json
+python segments.py -i sample.mp3 > segments.json
 ```
