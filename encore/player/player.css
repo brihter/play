@@ -1,0 +1,75 @@
+.player {
+  padding: 4px;
+  font-family: 'Roboto', sans-serif;
+  background-color: #131313;
+  color:#acacac;
+}
+
+.player h2 {
+  font-size: 1em;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+  line-height: 1.4em;
+}
+
+.player button.active {
+  background-color:#83C341 !important;
+  color: #131313 !important;
+}
+
+.player .controls {
+  background: #2D2D2D;
+  /* margin: 8px 0; */
+  display: flex;
+}
+
+.player .controls.top {
+  background: #131313;
+}
+
+.player .controls.top button {
+  height: 20px;
+  line-height: 20px;
+  border: 0 none;
+}
+
+.player .controls.bottom {
+  justify-content: space-between;
+  padding: 4px;
+}
+
+.player .controls.bottom button {
+  /* height: 36px; */
+  line-height: 36px;
+  border: 1px solid #171717;
+  width: 48px;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 0px 0px 1px #131313 inset
+}
+
+.player .controls button {
+  background: #2D2D2D;
+  border: 0 none;
+  color: #acacac;
+  cursor: pointer;
+  border:1px solid #161717;
+}
+
+.player .controls .group {
+  flex:auto;
+}
+
+.player #zoomview,
+.player #overview {
+  width: 100%;
+}
+
+.player #zoomview {
+  height: 120px;
+}
+
+.player #overview {
+  height: 40px;
+}

@@ -2,83 +2,78 @@
 <html lang="en">
 
 <head>
+  <title>Encore</title>
+
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="Bostjan Rihter">
-  <title>Encore</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  
   <style>
     body {
-      margin: 10px;
-      padding: 10px;
+      margin: 0px;
+      padding: 0px;
+      background-color: #131313;
+      color:#acacac;
     }
-
-    a,
-    a:visited {
-      color: blue;
-      text-decoration: none;
-    }
-
-    /*peaks*/
-    #zoomview,
-    #overview {
-      width: 100%;
-      margin: 12px auto;
-      background-color: #fefefe;
-      border: 1px solid #eaeaea;
-    }
-
-    #zoomview {
-      height: 100px;
-    }
-
-    #overview {
-      height: 50px;
-    }
-
-    /*
-    #peaks-control {
-      display: flex;
-      align-items: center;
-    }
-
-    #controls {
-      flex: 1;
-      margin-left: 1em;
-    }
-    */
-
-    .layers div {
-      display: block;
-    }
-
-    .layers input {
-      margin: .4rem;
-    }
-
   </style>
   <script src="https://cdn.jsdelivr.net/npm/peaks.js@0.26.0/peaks.min.js"></script>
+  <!-- player -->
+  <link rel="stylesheet" href="player/player.css" />
+  <script src="player/player.js"></script>
 </head>
 
 <body>
   <div class="player">
+    <h2>Yoshitaca</h2>
+    <h2>Just Lay Back (Ittetsu & Jun Akimoto Remix)</h2>
+    
+    <div class="controls top">
+      <div class="group right">
+        <button style="width:70px;"><</button>
+        <button style="width:70px;">></button>
+      </div>
+    </div>
+
     <div id="zoomview"></div>
     <div id="overview"></div>
+
     <audio>
       <source src="sample.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
+
+    <div class="controls bottom">
+      <div class="group">
+        <button class="active">></button>
+      </div>
+
+      <div class="group">
+        <button>1</button>
+        <button>2</button>
+        <button>4</button>
+        <button>8</button>
+        <button>16</button>
+        <button>32</button>
+      </div>
+
+      <div class="group">
+        <button>In</button>
+        <button>Out</button>
+        <button>Act</button>
+      </div>
+    </div>
   </div>
 
-  <div class="layers">
+  <!-- <div class="layers">
     <p>Layers:</p>
     <div><input type="checkbox" name="beats"><label for="beats">Beats</label></div>
     <div><input type="checkbox" name="segments"><label for="segments">Segments</label></div>
     <div><input type="checkbox" name="chroma"><label for="chroma">Chroma</label></div>
-  </div>
-
-  <p class="notes">
-    Track <a href="https://www.beatport.com/track/just-lay-back/1666351" target="_blank">Just Lay Back (Ittetsu & Jun Akimoto Remix)</a> by <a href="https://www.beatport.com/artist/yoshitaca/94210" target="_blank">Yoshitaca</a>.
-  </p>
+  </div> -->
 
   <script>
     const data = async () => {
@@ -101,20 +96,20 @@
     const init = ({ Peaks, data }) => {
       const beats = data.beats.map(b => ({
         time: b,
-        color: '#ccc',
+        //color: '#ccc',
         label: 'Beats'
       }))
 
       const segments = data.segments.map(s => ({
         time: s,
-        color: '#999',
+        //color: '#999',
         label: 'Segments',
         editable: true
       }))
 
       const points = [
-        ...beats,
-        ...segments
+        // ...beats,
+        // ...segments
       ]
 
       return new Promise((resolve, reject) => {
@@ -127,15 +122,17 @@
           dataUri: {
             arraybuffer: 'sample.dat'
           },
-          zoomWaveformColor: '#CD5C5C',
-          overviewHighlightColor: 'rgba(0,0,0,0)',
+
+          // zoomWaveformColor: '#CD5C5C',
+          overviewWaveformColor: 'red',
+          // overviewHighlightColor: 'red',
           points
         }, (err, peaks) => {
           if (err) {
             return reject(err)
           }
 
-          resolve(peaks)
+          return resolve(peaks)
         })
       })
     }
