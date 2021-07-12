@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Bostjan Rihter">
+  <title>Grid</title>
+  <script src="shape.js"></script>
+  <script src="fx.js"></script>
+  <script src="layer.js"></script>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    (() => {
+      const makeGrid = (layer) => {
+        const step = 8
+        const width = 1
+
+        for (let i = 0; i < window.innerWidth; i = i + step) {
+          shape.line(layer, { x0: i, y0: 0, x1: i, y1: window.innerHeight, color: '#1E2226', width }) // vertical
+          shape.line(layer, { x0: 0, y0: i, x1: window.innerWidth, y1: i, color: '#1E2226', width }) // horizontal
+        }
+
+        return layer
+      }
+
+      let background = layer({ name: 'background' })
+      fx.fill(background, { color: '#262B30' })
+
+      let grid = layer({ name: 'grid' })
+      grid = makeGrid(grid)
+    })()
+  </script>
+</body>
+
+</html>
