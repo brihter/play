@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="Bostjan Rihter">
   <title>Grid</title>
+  <script src="layer.js"></script>
   <script src="shape.js"></script>
   <script src="fx.js"></script>
-  <script src="layer.js"></script>
   <style>
     html,
     body {
@@ -22,23 +22,52 @@
 <body>
   <script>
     (() => {
-      const makeGrid = (layer) => {
-        const step = 8
-        const width = 1
+      const STEP = 8
+      const WIDTH = 1
 
-        for (let i = 0; i < window.innerWidth; i = i + step) {
-          shape.line(layer, { x0: i, y0: 0, x1: i, y1: window.innerHeight, color: '#1E2226', width }) // vertical
-          shape.line(layer, { x0: 0, y0: i, x1: window.innerWidth, y1: i, color: '#1E2226', width }) // horizontal
+      let background = layer({ name: 'background' })
+      background = fx.fill(background, { color: '#262B30' })
+
+      const makeGrid = (layer) => {
+        for (let i = 0; i < window.innerWidth; i = i + STEP) {
+          shape.line(layer, { x0: i, y0: 0, x1: i, y1: window.innerHeight, color: '#1E2226', width: WIDTH }) // vertical
+          shape.line(layer, { x0: 0, y0: i, x1: window.innerWidth, y1: i, color: '#1E2226', width: WIDTH }) // horizontal
         }
 
         return layer
       }
 
-      let background = layer({ name: 'background' })
-      fx.fill(background, { color: '#262B30' })
-
       let grid = layer({ name: 'grid' })
       grid = makeGrid(grid)
+
+      let sparks = layer({ name: 'sparks' })
+
+      const spark = (layer) => {
+        function rnd(min, max) {
+          return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        const padding = STEP*2
+        let rndX = rnd(padding, window.innerWidth-padding)
+        let rndY = rnd(padding, window.innerHeight-padding)
+        
+        const x = rndX - (rndX%STEP) + 1
+        const y = rndY - (rndY%STEP) + 1
+
+        shape.rectangle(layer, { x, y, width: STEP-2, height: STEP-2, color: 'rgba(255,255,255,0.5)' })
+
+        return layer
+      }
+
+      const makeSparks = (layer) => {
+        for (let i=0; i<400; ++i) {
+          layer = spark(layer)
+        }
+
+        return layer
+      }
+
+      sparks = makeSparks(sparks)
     })()
   </script>
 </body>

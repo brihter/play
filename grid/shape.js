@@ -13,3 +13,13 @@ shape.line = (layer, cfg) => {
 
   return layer
 }
+
+shape.rectangle = (layer, cfg) => {
+  const { ctx } = layer
+  const { x, y, width, height, color } = cfg
+  
+  ctx.fillStyle = color
+  ctx.fillRect(x, y, width, height)
+
+  return layer
+}
