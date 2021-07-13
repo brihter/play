@@ -11,7 +11,7 @@ const game = () => {
     return layer
   }
 
-  const makeSnake = (layer) => {
+  const makeLine = () => {
     const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
     const getX = () => {
@@ -65,26 +65,77 @@ const game = () => {
       length--
     }
 
-    shape.path(layer, {
-      path,
-      strokeStyle: '#E6FADC',
-      lineWidth: 2,
-      shadowBlur: 4,
-      shadowColor: '#E6FADC',
-      globalAlpha: rnd(2,4)/10
-    })
+    return { index: 0, path }
+  }
 
-    return layer
+  let lineCount = 0
+  lines = new Map()
+
+  const generate = () => {
+    lineCount++
+    while (lines.size < 1) {
+      lines.set(lineCount, makeLine())
+    }
+  }
+
+  const paint = () => {
+    lines.forEach((line) => {
+      const { index, prevIndex, path } = line
+
+      if (index === 0) {
+        line.prevIndex = index
+        line.index = line.index + 1
+        return
+      }
+
+      shape.line(animation, {
+        x0: path[prevIndex][0],
+        y0: path[prevIndex][1],
+        x1: path[index][0],
+        y1: path[index][1],
+        strokeStyle: '#E6FADC',
+        lineWidth: 2,
+        shadowBlur: 4,
+        shadowColor: '#E6FADC',
+        globalAlpha: 0.2
+      })
+
+      line.prevIndex = index
+      line.index = line.index + 1
+    })
+  }
+
+  const destroy = () => {
+    lines.forEach((line, key) => {
+      if (line.index < line.path.length) {
+        return
+      }
+
+      lines.delete(key)
+    })
+  }
+
+  let lastFrameTime = 0
+  const loop = (elapsedTime) => {
+    const delta = elapsedTime - (lastFrameTime || 0)
+    window.requestAnimationFrame(loop)
+    if (lastFrameTime && delta < 33) {
+      return
+    }
+
+    generate()
+    paint()
+    destroy()
+
+    lastFrameTime = elapsedTime
   }
 
   let background = layer({ name: 'background' })
-  background = fx.fill(background, { color: '#1D2918' })
-  
   let grid = layer({ name: 'grid' })
+  let animation = layer({ name: 'animation' })
+
+  background = fx.fill(background, { color: '#222' })
   grid = makeGrid(grid)
 
-  let snakes = layer({ name: 'snakes' })
-  for (let i=0; i<25; ++i) {
-    snakes = makeSnake(snakes)
-  }
+  window.requestAnimationFrame(loop)
 }

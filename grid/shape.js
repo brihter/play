@@ -2,7 +2,8 @@ const shape = {}
 
 shape.line = (layer, cfg) => {
   let { ctx } = layer
-   ctx = Object.assign(ctx, cfg)
+  ctx = Object.assign(ctx, cfg)
+  
   const {
     x0,
     y0,
