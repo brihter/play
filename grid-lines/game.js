@@ -1,24 +1,8 @@
 const game = () => {
-  const STEP = 12
-  const WIDTH = 2
+  const STEP = 8
+  const WIDTH = 1
   const WINDOW_WIDTH = window.innerWidth
   const WINDOW_HEIGHT = window.innerHeight
-
-  const makeGrid = (layer) => {
-    let i
-
-    // horizontal
-    for (i = 0; i < WINDOW_HEIGHT; i = i + STEP) {
-      shape.line(layer, { x0: 0, y0: i, x1: WINDOW_WIDTH, y1: i, strokeStyle: '#1C1C1C', lineWidth: WIDTH })
-    }
-
-    // vertical
-    for (i = 0; i < WINDOW_WIDTH; i = i + STEP) {
-      shape.line(layer, { x0: i, y0: 0, x1: i, y1: WINDOW_HEIGHT, strokeStyle: '#1C1C1C', lineWidth: WIDTH })
-    }
-
-    return layer
-  }
 
   const makeLine = () => {
     const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
@@ -81,7 +65,7 @@ const game = () => {
   lines = new Map()
 
   const generate = () => {
-    while (lines.size < 2) {
+    while (lines.size < 10) {
       lines.set(lineCount, makeLine())
       lineCount++
     }
@@ -102,11 +86,9 @@ const game = () => {
         y0: path[prevIndex][1],
         x1: path[index][0],
         y1: path[index][1],
-        strokeStyle: '#E6FADC',
-        lineWidth: 2,
-        shadowBlur: 4,
-        shadowColor: '#E6FADC',
-        globalAlpha: 0.2
+        strokeStyle: '#000',
+        lineWidth: WIDTH,
+        globalAlpha: 0.25
       })
 
       line.prevIndex = index
@@ -124,11 +106,14 @@ const game = () => {
     })
   }
 
+  const fps = 30
+  const fpsDelta = parseInt(1000 / fps)
+
   let lastFrameTime = 0
-  const loop = (elapsedTime) => {
-    const delta = elapsedTime - (lastFrameTime || 0)
+  const loop = (elapsedTime = 0) => {
+    const delta = elapsedTime - lastFrameTime
     window.requestAnimationFrame(loop)
-    if (lastFrameTime && delta < 33) {
+    if (lastFrameTime && delta < fpsDelta) {
       return
     }
 
@@ -139,12 +124,6 @@ const game = () => {
     lastFrameTime = elapsedTime
   }
 
-  let background = layer({ name: 'background' })
-  let grid = layer({ name: 'grid' })
   let animation = layer({ name: 'animation' })
-
-  background = fx.fill(background, { color: '#222' })
-  grid = makeGrid(grid)
-
   window.requestAnimationFrame(loop)
 }
