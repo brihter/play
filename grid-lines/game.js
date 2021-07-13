@@ -1,11 +1,13 @@
 const game = () => {
   const STEP = 12
   const WIDTH = 2
+  const WINDOW_WIDTH = window.visualViewport.width
+  const WINDOW_HEIGHT = window.visualViewport.height
 
   const makeGrid = (layer) => {
-    for (let i = 0; i < window.innerWidth; i = i + STEP) {
-      shape.line(layer, { x0: i, y0: 0, x1: i, y1: window.innerHeight, strokeStyle: '#1C1C1C', lineWidth: WIDTH }) // vertical
-      shape.line(layer, { x0: 0, y0: i, x1: window.innerWidth, y1: i, strokeStyle: '#1C1C1C', lineWidth: WIDTH }) // horizontal
+    for (let i = 0; i < WINDOW_WIDTH; i = i + STEP) {
+      shape.line(layer, { x0: i, y0: 0, x1: i, y1: WINDOW_HEIGHT, strokeStyle: '#1C1C1C', lineWidth: WIDTH }) // vertical
+      shape.line(layer, { x0: 0, y0: i, x1: WINDOW_WIDTH, y1: i, strokeStyle: '#1C1C1C', lineWidth: WIDTH }) // horizontal
     }
 
     return layer
@@ -15,12 +17,12 @@ const game = () => {
     const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
     const getX = () => {
-      const tmp = rnd(0, window.innerWidth)
+      const tmp = rnd(0, WINDOW_WIDTH)
       return tmp - (tmp%STEP)
     }
 
     const getY = () => {
-      const tmp = rnd(0, window.innerHeight)
+      const tmp = rnd(0, WINDOW_HEIGHT)
       return tmp - (tmp%STEP)
     }
 
@@ -72,9 +74,9 @@ const game = () => {
   lines = new Map()
 
   const generate = () => {
-    lineCount++
-    while (lines.size < 1) {
+    while (lines.size < 2) {
       lines.set(lineCount, makeLine())
+      lineCount++
     }
   }
 
