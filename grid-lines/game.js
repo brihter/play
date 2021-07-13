@@ -1,13 +1,20 @@
 const game = () => {
   const STEP = 12
   const WIDTH = 2
-  const WINDOW_WIDTH = window.visualViewport.width
-  const WINDOW_HEIGHT = window.visualViewport.height
+  const WINDOW_WIDTH = window.innerWidth
+  const WINDOW_HEIGHT = window.innerHeight
 
   const makeGrid = (layer) => {
-    for (let i = 0; i < WINDOW_WIDTH; i = i + STEP) {
-      shape.line(layer, { x0: i, y0: 0, x1: i, y1: WINDOW_HEIGHT, strokeStyle: '#1C1C1C', lineWidth: WIDTH }) // vertical
-      shape.line(layer, { x0: 0, y0: i, x1: WINDOW_WIDTH, y1: i, strokeStyle: '#1C1C1C', lineWidth: WIDTH }) // horizontal
+    let i
+
+    // horizontal
+    for (i = 0; i < WINDOW_HEIGHT; i = i + STEP) {
+      shape.line(layer, { x0: 0, y0: i, x1: WINDOW_WIDTH, y1: i, strokeStyle: '#1C1C1C', lineWidth: WIDTH })
+    }
+
+    // vertical
+    for (i = 0; i < WINDOW_WIDTH; i = i + STEP) {
+      shape.line(layer, { x0: i, y0: 0, x1: i, y1: WINDOW_HEIGHT, strokeStyle: '#1C1C1C', lineWidth: WIDTH })
     }
 
     return layer
