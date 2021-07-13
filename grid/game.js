@@ -4,28 +4,24 @@ const game = () => {
 
   const makeGrid = (layer) => {
     for (let i = 0; i < window.innerWidth; i = i + STEP) {
-      shape.line(layer, { x0: i, y0: 0, x1: i, y1: window.innerHeight, color: '#1E2226', width: WIDTH }) // vertical
-      shape.line(layer, { x0: 0, y0: i, x1: window.innerWidth, y1: i, color: '#1E2226', width: WIDTH }) // horizontal
+      shape.line(layer, { x0: i, y0: 0, x1: i, y1: window.innerHeight, strokeStyle: '#1E2226', lineWidth: WIDTH }) // vertical
+      shape.line(layer, { x0: 0, y0: i, x1: window.innerWidth, y1: i, strokeStyle: '#1E2226', lineWidth: WIDTH }) // horizontal
     }
 
     return layer
   }
 
   const makeSnake = (layer) => {
-    const rnd = (min, max) => {
-      return Math.floor(Math.random() * (max - min + 1) + min)
-    }
+    const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
     const getX = () => {
-      const padding = 0
-      const tmp = rnd(padding, window.innerWidth-padding)
-      return tmp - (tmp%STEP) + 1
+      const tmp = rnd(0, window.innerWidth)
+      return tmp - (tmp%STEP)
     }
 
     const getY = () => {
-      const padding = 0
-      const tmp = rnd(padding, window.innerHeight-padding)
-      return tmp - (tmp%STEP) + 1
+      const tmp = rnd(0, window.innerHeight)
+      return tmp - (tmp%STEP)
     }
 
     const seed = () => [
@@ -60,7 +56,7 @@ const game = () => {
 
     const path = []
 
-    let length = 20
+    let length = rnd(15,35)
     let current = seed()
     path.push(current)
     while (length > 0) {
@@ -71,8 +67,11 @@ const game = () => {
 
     shape.path(layer, {
       path,
-      color: '#fff',
-      width: 1
+      strokeStyle: '#fff',
+      lineWidth: 2,
+      shadowBlur: 4,
+      shadowColor: '#fff',
+      globalAlpha: 0.5
     })
 
     return layer
@@ -85,5 +84,7 @@ const game = () => {
   grid = makeGrid(grid)
 
   let snakes = layer({ name: 'snakes' })
-  snakes = makeSnake(snakes)
+  for (let i=0; i<25; ++i) {
+    snakes = makeSnake(snakes)
+  }
 }
