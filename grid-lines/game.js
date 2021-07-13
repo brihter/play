@@ -1,19 +1,21 @@
 const game = () => {
   const STEP = 8
   const WIDTH = 1
-  const WINDOW_WIDTH = window.innerWidth
-  const WINDOW_HEIGHT = window.innerHeight
+
+  let windowWidth
+  let windowHeight
+  let background
 
   const makeLine = () => {
     const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
     const getX = () => {
-      const tmp = rnd(0, WINDOW_WIDTH)
+      const tmp = rnd(0, windowWidth)
       return tmp - (tmp%STEP)
     }
 
     const getY = () => {
-      const tmp = rnd(0, WINDOW_HEIGHT)
+      const tmp = rnd(0, windowHeight)
       return tmp - (tmp%STEP)
     }
 
@@ -81,7 +83,7 @@ const game = () => {
         return
       }
 
-      shape.line(animation, {
+      shape.line(background, {
         x0: path[prevIndex][0],
         y0: path[prevIndex][1],
         x1: path[index][0],
@@ -108,9 +110,13 @@ const game = () => {
 
   const fps = 30
   const fpsDelta = parseInt(1000 / fps)
-
   let lastFrameTime = 0
+
   const loop = (elapsedTime = 0) => {
+    if (stop) {
+      return
+    }
+
     const delta = elapsedTime - lastFrameTime
     window.requestAnimationFrame(loop)
     if (lastFrameTime && delta < fpsDelta) {
@@ -124,6 +130,25 @@ const game = () => {
     lastFrameTime = elapsedTime
   }
 
-  let animation = layer({ name: 'animation' })
-  window.requestAnimationFrame(loop)
+  let stop = false
+
+  const init = () => {
+    stop = true
+    windowWidth = window.innerWidth
+    windowHeight = window.innerHeight
+    
+    if (background) {
+      background.element.remove()
+    }
+
+    background = layer({ name: 'background' })
+    fx.fill(background, { color: '#fff' })
+    stop = false
+
+    window.requestAnimationFrame(loop)
+  }
+
+  window.addEventListener('resize', init)
+
+  init()
 }
