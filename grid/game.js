@@ -4,8 +4,8 @@ const game = () => {
 
   const makeGrid = (layer) => {
     for (let i = 0; i < window.innerWidth; i = i + STEP) {
-      shape.line(layer, { x0: i, y0: 0, x1: i, y1: window.innerHeight, strokeStyle: '#1E2226', lineWidth: WIDTH }) // vertical
-      shape.line(layer, { x0: 0, y0: i, x1: window.innerWidth, y1: i, strokeStyle: '#1E2226', lineWidth: WIDTH }) // horizontal
+      shape.line(layer, { x0: i, y0: 0, x1: i, y1: window.innerHeight, strokeStyle: '#1C1C1C', lineWidth: WIDTH }) // vertical
+      shape.line(layer, { x0: 0, y0: i, x1: window.innerWidth, y1: i, strokeStyle: '#1C1C1C', lineWidth: WIDTH }) // horizontal
     }
 
     return layer
@@ -67,18 +67,18 @@ const game = () => {
 
     shape.path(layer, {
       path,
-      strokeStyle: '#fff',
+      strokeStyle: '#E6FADC',
       lineWidth: 2,
       shadowBlur: 4,
-      shadowColor: '#fff',
-      globalAlpha: 0.5
+      shadowColor: '#E6FADC',
+      globalAlpha: rnd(2,4)/10
     })
 
     return layer
   }
 
   let background = layer({ name: 'background' })
-  background = fx.fill(background, { color: '#262B30' })
+  background = fx.fill(background, { color: '#1D2918' })
   
   let grid = layer({ name: 'grid' })
   grid = makeGrid(grid)
