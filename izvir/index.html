@@ -42,7 +42,7 @@
       let windowHeight
 
       const makeOuterCircle = () => {
-        const circle = layer('logoOuterCircle')
+        const circle = layer().create('logoOuterCircle')
         shape.circle(circle, {
           mode: 'stroke',
           x: centerX,
@@ -65,7 +65,7 @@
       }
 
       const makeInnerCircle = () => {
-        const circle = layer('logoInnerCircle')
+        const circle = layer().create('logoInnerCircle')
         shape.circle(circle, {
           mode: 'stroke',
           x: centerX,
@@ -86,7 +86,7 @@
       }
 
       const makePie = () => {
-        const pie = layer('logoPie')
+        const pie = layer().create('logoPie')
         shape.pie(pie, {
           x: centerX,
           y: centerY,
@@ -125,12 +125,6 @@
       let innerCircle
       let pie
 
-      const paint = () => {
-        pixelate(pixelLayer, outerCircle, COLOR_PALETTE_2)
-        pixelate(pixelLayer, innerCircle, COLOR_PALETTE_1)
-        pixelate(pixelLayer, pie, COLOR_PALETTE_2)
-      }
-
       let stop = false
       const init = () => {
         stop = true
@@ -144,20 +138,26 @@
           background.element.remove()
         }
 
-        background = layer('background')
+        background = layer().create('background')
         fx.fill(background, { color: COLOR_DARK })
 
         if (pixelLayer) {
           pixelLayer.element.remove()
         }
 
-        pixelLayer = layer('pixels')
+        pixelLayer = layer().create('pixels')
         outerCircle = makeOuterCircle()
         innerCircle = makeInnerCircle()
         pie = makePie()
         stop = false
 
         window.requestAnimationFrame(loop)
+      }
+
+      const paint = () => {
+        pixelate(pixelLayer, outerCircle, COLOR_PALETTE_2)
+        pixelate(pixelLayer, innerCircle, COLOR_PALETTE_1)
+        pixelate(pixelLayer, pie, COLOR_PALETTE_2)
       }
 
       let lastFrameTime = 0

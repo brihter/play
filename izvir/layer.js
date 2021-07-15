@@ -1,4 +1,4 @@
-const layer = (name, cfg) => {
+const layer = () => {
   const toMatrix = ({ layer, size }) => {
     const pixels = layer.ctx.getImageData(0, 0, layer.width, layer.height).data
 
@@ -21,27 +21,33 @@ const layer = (name, cfg) => {
     return matrix
   }
 
-  const element = document.createElement('canvas')
-  
-  element.width = window.innerWidth
-  element.height = window.innerHeight
-  element.style.width = '100%'
-  element.style.height = '100%'
-  element.style.position = 'absolute'
-  element.style.top = 0
-  element.style.left = 0
+  const create = (name, cfg) => {
+    const element = document.createElement('canvas')
 
-  let ctx = element.getContext('2d')
-  ctx = Object.assign(ctx, cfg)
+    element.width = window.innerWidth
+    element.height = window.innerHeight
+    element.style.width = '100%'
+    element.style.height = '100%'
+    element.style.position = 'absolute'
+    element.style.top = 0
+    element.style.left = 0
 
-  document.body.appendChild(element)
-  
+    let ctx = element.getContext('2d')
+    ctx = Object.assign(ctx, cfg)
+
+    document.body.appendChild(element)
+
+    return {
+      name,
+      element,
+      ctx,
+      width: element.width,
+      height: element.height,
+    }
+  }
+
   return {
-    name,
-    element,
-    ctx,
-    width: element.width,
-    height: element.height,
+    create,
     toMatrix
   }
 }
