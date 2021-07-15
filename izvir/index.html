@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Bostjan Rihter">
+  <title>Izvir</title>
+  <script src="layer.js"></script>
+  <script src="shape.js"></script>
+  <script src="fx.js"></script>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    (() => {     
+      const FACTOR = 3
+      const CENTER_X = window.innerWidth / 2
+      const CENTER_Y = window.innerHeight / 2
+
+      const background = layer({ name: 'background' })
+      fx.fill(background, { color: 'rgb(26, 26, 26)' })
+
+      const logo = layer({ name: 'logo' })
+      
+      // outer circle
+      shape.circle(logo, {
+        mode: 'stroke',
+        x: CENTER_X,
+        y: CENTER_Y,
+        radius: 42 * FACTOR,
+        strokeStyle: 'rgba(218, 218, 218, 0.4)',
+        lineWidth: 14 * FACTOR,
+        startAngle: (3*Math.PI/4) + Math.PI,
+        endAngle: (Math.PI/4) + Math.PI
+      })
+
+      // inner circle
+      shape.circle(logo, {
+        mode: 'stroke',
+        x: CENTER_X,
+        y: CENTER_Y,
+        radius: 24 * FACTOR,
+        strokeStyle: 'rgba(218, 218, 218, 0.8)',
+        lineWidth: 4 * FACTOR
+      })
+
+      // slice of pie at the top
+      shape.pie(logo, {
+        x: CENTER_X,
+        y: CENTER_Y,
+        radius: 60 * FACTOR,
+        mode: 'fill',
+        fillStyle: 'rgba(218, 218, 218, 1)',
+        startAngle: (Math.PI/3) + Math.PI,
+        endAngle: (2*Math.PI/3) + Math.PI
+      })
+    })()
+  </script>
+</body>
+
+</html>
