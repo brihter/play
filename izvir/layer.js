@@ -14,6 +14,8 @@ const layer = ({ name }) => {
   return {
     name,
     element,
-    ctx: element.getContext('2d')
+    ctx: element.getContext('2d'),
+    width: element.width,
+    height: element.height
   }
 }

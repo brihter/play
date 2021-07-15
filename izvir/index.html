@@ -21,26 +21,31 @@
 
 <body>
   <script>
-    (() => {     
-      const FACTOR = 3
+    (() => {
+      const FACTOR = 4
       const CENTER_X = window.innerWidth / 2
       const CENTER_Y = window.innerHeight / 2
+      const WINDOW_WIDTH = window.innerWidth
+      const WINDOW_HEIGHT = window.innerHeight
+      
+      const COLOR_DARK = 'rgb(26, 26, 26)'
+      const COLOR_LIGHT = 'rgb(218, 218, 218)'
 
       const background = layer({ name: 'background' })
-      fx.fill(background, { color: 'rgb(26, 26, 26)' })
+      fx.fill(background, { color: COLOR_DARK })
 
       const logo = layer({ name: 'logo' })
-      
+
       // outer circle
       shape.circle(logo, {
         mode: 'stroke',
         x: CENTER_X,
         y: CENTER_Y,
         radius: 42 * FACTOR,
-        strokeStyle: 'rgba(218, 218, 218, 0.4)',
+        strokeStyle: COLOR_LIGHT,
         lineWidth: 14 * FACTOR,
-        startAngle: (3*Math.PI/4) + Math.PI,
-        endAngle: (Math.PI/4) + Math.PI
+        startAngle: (3 * Math.PI / 4) + Math.PI,
+        endAngle: (Math.PI / 4) + Math.PI
       })
 
       // inner circle
@@ -49,7 +54,7 @@
         x: CENTER_X,
         y: CENTER_Y,
         radius: 24 * FACTOR,
-        strokeStyle: 'rgba(218, 218, 218, 0.8)',
+        strokeStyle: COLOR_LIGHT,
         lineWidth: 4 * FACTOR
       })
 
@@ -59,10 +64,60 @@
         y: CENTER_Y,
         radius: 60 * FACTOR,
         mode: 'fill',
-        fillStyle: 'rgba(218, 218, 218, 1)',
-        startAngle: (Math.PI/3) + Math.PI,
-        endAngle: (2*Math.PI/3) + Math.PI
+        fillStyle: COLOR_LIGHT,
+        startAngle: (Math.PI / 3) + Math.PI,
+        endAngle: (2 * Math.PI / 3) + Math.PI
       })
+
+      const layer2matrix = (layer) => {
+        const step = 6
+        const pixels = layer.ctx.getImageData(0, 0, layer.width, layer.height).data
+
+        const matrix = []
+        for (let i = 0; i < layer.height; i += step) {
+          for (let j = 0; j < layer.width; j += step) {
+            const alpha = pixels[(j + i * layer.width) * 4 + 3]
+
+            if (alpha === 0) {
+              continue
+            }
+
+            matrix.push([
+              Math.floor(j/step),
+              Math.floor(i/step)
+            ])
+          }
+        }
+
+        return matrix
+      }
+
+      const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+
+      const pixelLayer = layer({ name: 'pixels' })
+
+      const pixels = layer2matrix(logo)
+      pixels.forEach(pixel => {
+        const step = 6
+
+        const colors = [
+          'rgba(218, 218, 218, 0.25)',
+          'rgba(218, 218, 218, 0.38)',
+          'rgba(218, 218, 218, 0.5)',
+          'rgba(218, 218, 218, 0.63)',
+          'rgba(218, 218, 218, 0.75)'
+        ]
+
+        shape.rectangle(pixelLayer, {
+          x: pixel[0]*step+1,
+          y: pixel[1]*step+1,
+          width: step-1,
+          height: step-1,
+          fillStyle: colors[rnd(0, colors.length-1)]
+        })
+      })
+
+      logo.element.remove()
     })()
   </script>
 </body>
