@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="Bostjan Rihter">
   <title>Izvir</title>
+  <script src="math.js"></script>
   <script src="layer.js"></script>
   <script src="shape.js"></script>
   <script src="fx.js"></script>
@@ -22,98 +23,152 @@
 <body>
   <script>
     (() => {
-      // todo, move somewhere
-      const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+      const { toMatrix } = layer()
+      const { rnd } = math()
 
-      const FACTOR = 4
-      const CENTER_X = window.innerWidth / 2
-      const CENTER_Y = window.innerHeight / 2
-      const WINDOW_WIDTH = window.innerWidth
-      const WINDOW_HEIGHT = window.innerHeight
+      const FACTOR = 3
+      const FPS = 30
+      const FPS_DELTA = parseInt(1000 / FPS)
+      const PIXEL_SIZE = 6
+
       const COLOR_DARK = 'rgb(26, 26, 26)'
       const COLOR_LIGHT = 'rgb(218, 218, 218)'
-      const PIXEL_SIZE = 8
+      const COLOR_PALETTE_1 = ['#c1c1c1', '#a7a7a7', '#8e8e8e', '#747474', '#5b5b5b'] // white
+      const COLOR_PALETTE_2 = ['#5EE6CD', '#129A81', '#008067', '#00674E', '#004D34'] // green
 
-      const background = layer('background')
-      fx.fill(background, { color: COLOR_DARK })
+      let centerX
+      let centerY
+      let windowWidth
+      let windowHeight
 
-      const logoOuterCircle = layer('logoOuterCircle')
-      shape.circle(logoOuterCircle, {
-        mode: 'stroke',
-        x: CENTER_X,
-        y: CENTER_Y,
-        radius: 42 * FACTOR,
-        strokeStyle: COLOR_LIGHT,
-        lineWidth: 14 * FACTOR,
-        startAngle: (3 * Math.PI / 4) + Math.PI,
-        endAngle: (Math.PI / 4) + Math.PI
-      })
+      const makeOuterCircle = () => {
+        const circle = layer('logoOuterCircle')
+        shape.circle(circle, {
+          mode: 'stroke',
+          x: centerX,
+          y: centerY,
+          radius: 42 * FACTOR,
+          strokeStyle: COLOR_LIGHT,
+          lineWidth: 14 * FACTOR,
+          startAngle: (3 * Math.PI / 4) + Math.PI,
+          endAngle: (Math.PI / 4) + Math.PI
+        })
 
-      const logoInnerCircle = layer('logoInnerCircle')
-      shape.circle(logoInnerCircle, {
-        mode: 'stroke',
-        x: CENTER_X,
-        y: CENTER_Y,
-        radius: 24 * FACTOR,
-        strokeStyle: COLOR_LIGHT,
-        lineWidth: 4 * FACTOR
-      })
+        const pixels = toMatrix({
+          layer: circle,
+          size: PIXEL_SIZE
+        })
 
-      const logoPie = layer('logoPie')
-      shape.pie(logoPie, {
-        x: CENTER_X,
-        y: CENTER_Y,
-        radius: 60 * FACTOR,
-        mode: 'fill',
-        fillStyle: COLOR_LIGHT,
-        startAngle: (Math.PI / 3) + Math.PI,
-        endAngle: (2 * Math.PI / 3) + Math.PI
-      })
+        circle.element.remove()
 
-      // calculate pixel positons
-      const { toMatrix } = layer()
-      const pixelsOuterCircle = toMatrix({ layer: logoOuterCircle, size: PIXEL_SIZE })
-      const pixelsInnerCircle = toMatrix({ layer: logoInnerCircle, size: PIXEL_SIZE })
-      const pixelsPie = toMatrix({ layer: logoPie, size: PIXEL_SIZE })
+        return pixels
+      }
 
-      logoOuterCircle.element.remove()
-      logoInnerCircle.element.remove()
-      logoPie.element.remove()
+      const makeInnerCircle = () => {
+        const circle = layer('logoInnerCircle')
+        shape.circle(circle, {
+          mode: 'stroke',
+          x: centerX,
+          y: centerY,
+          radius: 24 * FACTOR,
+          strokeStyle: COLOR_LIGHT,
+          lineWidth: 4 * FACTOR
+        })
 
-      const pixelate = (layer, pixels) => {
+        const pixels = toMatrix({
+          layer: circle,
+          size: PIXEL_SIZE
+        })
+
+        circle.element.remove()
+
+        return pixels
+      }
+
+      const makePie = () => {
+        const pie = layer('logoPie')
+        shape.pie(pie, {
+          x: centerX,
+          y: centerY,
+          radius: 60 * FACTOR,
+          mode: 'fill',
+          fillStyle: COLOR_LIGHT,
+          startAngle: (Math.PI / 3) + Math.PI,
+          endAngle: (2 * Math.PI / 3) + Math.PI
+        })
+
+        const pixels = toMatrix({
+          layer: pie,
+          size: PIXEL_SIZE
+        })
+
+        pie.element.remove()
+
+        return pixels
+      }
+
+      const pixelate = (layer, pixels, colorPalette) => {
         pixels.forEach(pixel => {
-          const colors = [
-            '#dadada',
-            '#c1c1c1',
-            '#a7a7a7',
-            '#8e8e8e',
-            '#747474',
-            '#5b5b5b',
-          ]
-
           shape.rectangle(layer, {
-            x: pixel[0]+1,
-            y: pixel[1]+1,
-            width: PIXEL_SIZE-1,
-            height: PIXEL_SIZE-1,
-            fillStyle: colors[rnd(0, colors.length-1)]
+            x: pixel[0] + 1,
+            y: pixel[1] + 1,
+            width: PIXEL_SIZE - 1,
+            height: PIXEL_SIZE - 1,
+            fillStyle: colorPalette[rnd(0, colorPalette.length - 1)]
           })
         })
       }
 
-      const outerCirclePixelLayer = layer('pixels', { globalAlpha: 0.4 })
-      const innerCirclePixelLayer = layer('pixels', { globalAlpha: 0.8 })
-      const piePixelLayer = layer('pixels', { globalAlpha: 1 })
+      let background
+      let pixelLayer
+      let outerCircle
+      let innerCircle
+      let pie
 
-      // animation
-      const fps = 15
-      const fpsDelta = parseInt(1000 / fps)
-      
+      const paint = () => {
+        pixelate(pixelLayer, outerCircle, COLOR_PALETTE_2)
+        pixelate(pixelLayer, innerCircle, COLOR_PALETTE_1)
+        pixelate(pixelLayer, pie, COLOR_PALETTE_2)
+      }
+
+      let stop = false
+      const init = () => {
+        stop = true
+
+        windowWidth = window.innerWidth
+        windowHeight = window.innerHeight
+        centerX = window.innerWidth / 2
+        centerY = window.innerHeight / 2
+
+        if (background) {
+          background.element.remove()
+        }
+
+        background = layer('background')
+        fx.fill(background, { color: COLOR_DARK })
+
+        if (pixelLayer) {
+          pixelLayer.element.remove()
+        }
+
+        pixelLayer = layer('pixels')
+        outerCircle = makeOuterCircle()
+        innerCircle = makeInnerCircle()
+        pie = makePie()
+        stop = false
+
+        window.requestAnimationFrame(loop)
+      }
+
       let lastFrameTime = 0
       const loop = (elapsedTime = 0) => {
+        if (stop) {
+          return
+        }
+
         const delta = elapsedTime - lastFrameTime
         window.requestAnimationFrame(loop)
-        if (lastFrameTime && delta < fpsDelta) {
+        if (lastFrameTime && delta < FPS_DELTA) {
           return
         }
 
@@ -121,13 +176,8 @@
         lastFrameTime = elapsedTime
       }
 
-      const paint = () => {
-        pixelate(outerCirclePixelLayer, pixelsOuterCircle)
-        pixelate(innerCirclePixelLayer, pixelsInnerCircle)
-        pixelate(piePixelLayer, pixelsPie)
-      }
-
-      window.requestAnimationFrame(loop)
+      window.addEventListener('resize', init)
+      init()
     })()
   </script>
 </body>
