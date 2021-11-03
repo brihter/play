@@ -12,4 +12,3 @@ NODE_ENV=test \
 
 mocha_exit=$?
 exit $mocha_exit
-
