@@ -1,4 +1,0 @@
-const Bin = () => {
-  return {
-  }
-}
