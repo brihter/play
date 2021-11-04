@@ -17,6 +17,7 @@ const Box = (cfg = {}) => {
   } = cfg
 
   const bins = Array(binCount).fill(Bin({
+    stack,
     width: stack === 'vertical' ? width : width/binCount,
     height: stack === 'vertical' ? height/binCount : height
   }))

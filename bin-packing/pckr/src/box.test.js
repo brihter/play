@@ -1,3 +1,4 @@
+import { expect } from 'chai'
 import { Box } from './box.js'
 
 describe('Box', () => {
@@ -83,7 +84,7 @@ describe('Box', () => {
   })
 
   describe('pack()', () => {
-    it('should pack items into one bin perfectly', () => {
+    it.skip('should pack items into a bin #1', () => {
       const box = Box({
         width: 10,
         height: 1,
@@ -91,13 +92,18 @@ describe('Box', () => {
         stack: 'vertical'
       })
 
-      const result = box.pack([
+      const bins = box.pack([
         [5,1],
-        [3,1]
+        [3,1],
         [2,1]
       ])
       
-      // console.log(result)
+      const bin1 = bins[0]
+      expect(bin1.items).to.eql([
+        [5,1],
+        [3,1],
+        [2,1]
+      ])
     })
   })
 })
