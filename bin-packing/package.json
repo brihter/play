@@ -5,6 +5,7 @@
   "scripts": {
     "test": "./bin/test.sh"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {
