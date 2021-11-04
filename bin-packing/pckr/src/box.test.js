@@ -1,16 +1,16 @@
 import { Box } from './box.js'
 
 describe('Box', () => {
-  it('use defaults', () => {
+  it('should use defaults', () => {
     const box = Box()
 
-    expect(box.width).to.eql(100)
-    expect(box.height).to.eql(100)
-    expect(box.bins).to.eql(1)
-    expect(box.stack).to.eql('vertical')
+    expect(box.cfg.width).to.eql(100)
+    expect(box.cfg.height).to.eql(100)
+    expect(box.cfg.bins).to.eql(1)
+    expect(box.cfg.stack).to.eql('vertical')
   })
 
-  it('use config', () => {
+  it('should use config', () => {
     const box = Box({
       width: 1000,
       height: 1000,
@@ -18,26 +18,39 @@ describe('Box', () => {
       stack: 'horizontal'
     })
 
-    expect(box.width).to.eql(1000)
-    expect(box.height).to.eql(1000)
-    expect(box.bins).to.eql(5)
-    expect(box.stack).to.eql('horizontal')
+    expect(box.cfg.width).to.eql(1000)
+    expect(box.cfg.height).to.eql(1000)
+    expect(box.cfg.bins).to.eql(5)
+    expect(box.cfg.stack).to.eql('horizontal')
   })
 
-  it.skip('should create bins', () => {
-    // ...
+  it('should create bins', () => {
+    const box = Box({
+      width: 10,
+      height: 2,
+      bins: 2,
+      stack: 'vertical'
+    })
+
+    expect(box.bins.length).to.eql(2)
   })
 
   describe('pack()', () => {
-    it('should pack items into bins', () => {
+    it('should pack items into one bin perfectly', () => {
       const box = Box({
-        width: 100,
-        height: 10,
-        bins: 1,
+        width: 10,
+        height: 2,
+        bins: 2,
         stack: 'vertical'
       })
 
-      const result = box.pack([100])
+      const result = box.pack([
+        [5,1],
+        [3,1]
+        [2,1]
+      ])
+      
+      // console.log(result)
     })
   })
 })

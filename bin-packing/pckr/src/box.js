@@ -1,3 +1,5 @@
+import { Bin } from './bin.js'
+
 const Box = (cfg = {}) => {
   cfg = Object.assign({
     width: 100,
@@ -6,17 +8,18 @@ const Box = (cfg = {}) => {
     stack: 'vertical'
   }, cfg)
 
-  let bins = []
+
+  const bins = Array(cfg.bins).fill(Bin({
+    boxCfg: cfg
+  }))
 
   const pack = (items = []) => {
     return bins
   }
 
   return {
-    width: cfg.width,
-    height: cfg.height,
-    bins: cfg.bins,
-    stack: cfg.stack,
+    cfg,
+    bins,
 
     pack
   }
