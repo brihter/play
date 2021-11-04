@@ -9,8 +9,16 @@ const Box = (cfg = {}) => {
   }, cfg)
 
 
-  const bins = Array(cfg.bins).fill(Bin({
-    boxCfg: cfg
+  const {
+    width,
+    height,
+    stack,
+    bins : binCount
+  } = cfg
+
+  const bins = Array(binCount).fill(Bin({
+    width: stack === 'vertical' ? width : width/binCount,
+    height: stack === 'vertical' ? height/binCount : height
   }))
 
   const pack = (items = []) => {

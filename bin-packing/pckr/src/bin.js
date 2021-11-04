@@ -1,17 +1,18 @@
-// const binSize = (cfg.stack === 'vertical') ? Math.floor(cfg.height / cfg.bins) : Math.floor(cfg.width / cfg.bins)
-
 const Bin = (cfg = {}) => {
   cfg = Object.assign({
-    width: 100,
-    height: 100,
-    boxCfg: {}
+    width: 0,
+    height: 0
   }, cfg)
 
-  let capacity = 0
+  const {
+    width,
+    height
+  } = cfg
 
   return {
     cfg,
-    capacity
+    width,
+    height
   }
 }
 

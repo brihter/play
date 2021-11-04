@@ -4,8 +4,8 @@ describe('Bin', () => {
   it('should use defaults', () => {
     const bin = Bin()
 
-    expect(bin.cfg.width).to.eql(100)
-    expect(bin.cfg.height).to.eql(100)
+    expect(bin.width).to.eql(0)
+    expect(bin.height).to.eql(0)
   })
 
   it('should use config', () => {
@@ -14,13 +14,7 @@ describe('Bin', () => {
       height: 1000
     })
 
-    expect(bin.cfg.width).to.eql(1000)
-    expect(bin.cfg.height).to.eql(1000)
-  })
-
-  it('should have capacity', () => {
-    const bin = Bin()
-
-    expect(bin.capacity).to.eql(0)
-  })
+    expect(bin.width).to.eql(1000)
+    expect(bin.height).to.eql(1000)
+  })  
 })
