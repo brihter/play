@@ -1,7 +1,3 @@
-// const chai from 'chai')
-// const sinon from 'sinon')
-// const sinonChai from 'sinon-chai')
-
 import chai from 'chai'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'

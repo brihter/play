@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./pckr/test.sh
+./pckr/bin/test.sh
