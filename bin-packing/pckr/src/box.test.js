@@ -84,7 +84,7 @@ describe('Box', () => {
   })
 
   describe('pack()', () => {
-    it.skip('should pack items into a bin #1', () => {
+    it('should pack items into a bin', () => {
       const box = Box({
         width: 10,
         height: 1,
@@ -99,11 +99,51 @@ describe('Box', () => {
       ])
       
       const bin1 = bins[0]
-      expect(bin1.items).to.eql([
+      expect(bin1.getItems()).to.eql([
         [5,1],
         [3,1],
         [2,1]
       ])
+    })
+
+    it('should pack items into two bins #1', () => {
+      const box = Box({
+        width: 2,
+        height: 2,
+        bins: 2,
+        stack: 'vertical'
+      })
+
+      const bins = box.pack([
+        [2,1],
+        [2,1]
+      ])
+      
+      const bin1 = bins[0].getItems()
+      const bin2 = bins[1].getItems()
+
+      expect(bin1).to.eql([[2,1]])
+      expect(bin2).to.eql([[2,1]])
+    })
+
+    it('should pack items into two bins #2', () => {
+      const box = Box({
+        width: 3,
+        height: 2,
+        bins: 2,
+        stack: 'vertical'
+      })
+
+      const bins = box.pack([
+        [2,1],
+        [3,1]
+      ])
+      
+      const bin1 = bins[0].getItems()
+      const bin2 = bins[1].getItems()
+
+      expect(bin1).to.eql([[2,1]])
+      expect(bin2).to.eql([[3,1]])
     })
   })
 })
