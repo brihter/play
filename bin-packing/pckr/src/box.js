@@ -33,7 +33,7 @@ const Box = (cfg = {}) => {
     const strategy = resolveStrategy(opts.strategy)
 
     const add = (item) => {
-      const index = strategy(bins, item, stack)
+      const index = strategy(bins, item)
       const bin = bins[index]
       bin.add(item)
     }

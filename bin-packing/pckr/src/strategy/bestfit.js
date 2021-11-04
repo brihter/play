@@ -3,6 +3,7 @@
 
 const find = (items = []) => {
   let lowest = -1
+
   for (let i = 0; i < items.length; i++) {
     const current = items[i]
     if (current < 0) {
@@ -22,10 +23,11 @@ const find = (items = []) => {
   return lowest
 }
 
-const bestFit = (bins = [], item = [], stack = '') => {
-  const dimension = stack === 'vertical' ? 0 : 1
-  const value = item[dimension]
-  const capacities = bins.map(b => b.getCapacity().available - value)
+const bestFit = (bins = [], item = []) => {
+  const capacities = bins.map(bin => {
+    const capacity = bin.getCapacity()
+    return capacity.available - bin.getValue(item)
+  })
 
   return find(capacities)
 }

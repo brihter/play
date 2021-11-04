@@ -22,13 +22,14 @@ const Bin = (cfg = {}) => {
 
   const getItems = () => items
 
-  const add = (item) => {
+  const getValue = (item) => {
     const dimension = stack === 'vertical' ? 0 : 1
-    const value = item[dimension]
-
+    return item[dimension]
+  }
+  
+  const add = (item) => {
     items.push(item)
-    capacity.available -= value
-
+    capacity.available -= getValue(item)
     return items
   }
 
@@ -38,6 +39,7 @@ const Bin = (cfg = {}) => {
     
     getCapacity,
     getItems,
+    getValue,
     add
   }
 }
