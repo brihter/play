@@ -175,4 +175,10 @@ describe('Box', () => {
       ])
     })
   })
+
+  describe('align()', () => {
+    it.skip('should align', () => {
+
+    })
+  })
 })

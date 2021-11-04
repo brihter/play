@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./pckr/bin/test.sh
+./packer/bin/test.sh

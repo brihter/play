@@ -7,7 +7,8 @@ const Box = (cfg = {}) => {
     width: 100,
     height: 100,
     bins: 1,
-    stack: 'vertical'
+    stack: 'vertical',
+    items: []
   }, cfg)
 
   const {
@@ -34,6 +35,11 @@ const Box = (cfg = {}) => {
 
     const add = (item) => {
       const index = strategy(bins, item)
+      if (index < 0) {
+        console.warn('item doesnt fit', item)
+        return
+      }
+
       const bin = bins[index]
       bin.add(item)
     }
@@ -42,11 +48,19 @@ const Box = (cfg = {}) => {
     return bins
   }
 
+  const align = () => {
+    return bins
+  }
+  
+  // init
+  pack(cfg.items)
+  
   return {
     cfg,
     bins,
 
-    pack
+    pack,
+    align
   }
 }
 
