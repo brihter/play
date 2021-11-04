@@ -1,9 +1,13 @@
 #!/bin/bash
 
+# set the working dir as the current dir
+cd "$(dirname "$0")"
+pwd
+
 NODE_ENV=test \
   npx mocha \
   --exit \
-  --file test/unit.js \
+  --file test.js \
   --recursive \
   --bail \
   --timeout 1000 \

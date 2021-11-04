@@ -2,9 +2,8 @@
   "name": "bin-packing",
   "version": "1.0.0",
   "description": "",
-  "main": "layer.js",
   "scripts": {
-    "test": "./bin/test.sh"
+    "test": "./test.sh"
   },
   "author": "",
   "license": "ISC",
@@ -17,3 +16,4 @@
     "sinon-chai": "^3.7.0"
   }
 }
+
