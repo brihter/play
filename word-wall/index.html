@@ -3,10 +3,10 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Word Cloud</title>
+  <title>Word Wall</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Code=Pro:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400&display=swap" rel="stylesheet">
   <style>
     html,
     body {
@@ -24,19 +24,23 @@
       font-weight: normal;
       text-align: justify;
       user-select: none;
-    }
-
-    /* theme */
-    body {
-      color:#888;
       font-weight: 300;
     }
 
-    .w1 { color:#777; font-weight: 400; }
-    .w2 { color:#444; font-weight: 400; }
+    .w1 { font-weight: 400; }
+    .w2 { font-weight: 400; }
+
+    /* default theme */
+    body { background-color:#fff; color:#888; }
+    .w1 { color:#777; }
+    .w2 { color:#444; }
+
+    body.gruvbox { background-color: #1d2021; color: #3c3836; }
+    .gruvbox .w1 { color:#504945; }
+    .gruvbox .w2 { color:#7c6f64; }
   </style>
 </head>
-<body>
+<body class="gruvbox">
   Aarav Horne
   Landen Hammond
   Aspen Romero
