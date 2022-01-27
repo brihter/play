@@ -8,9 +8,20 @@
   <meta itemprop="name" content="Mementō Morī">
   <title>Mementō Morī</title>
   <meta itemprop="description" content="Remember that you (have to) die.">
+  <!-- social -->
+  <meta itemprop="image" content="https://brihter.github.io/play/memento-mori/preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mementō Morī">
+  <meta name="twitter:description" content="Remember that you (have to) die.">
+  <meta name="twitter:image:src" content="https://brihter.github.io/play/memento-mori/preview.png">
+  <meta property="og:title" content="Mementō Morī" />
+  <meta property="og:description" content="Remember that you (have to) die." />
+  <meta property="og:image" content="https://brihter.github.io/play/memento-mori/preview.png" />
+  <!-- font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+  <!-- js -->
   <script src="layer.js"></script>
   <script src="shape.js"></script>
   <script src="text.js"></script>
@@ -20,14 +31,19 @@
     body {
       margin: 0;
       padding: 0 0 24px;
-      /* overflow: hidden; */
       width: 100%;
       text-align: center;
     }
 
-    /* feature: hide scrollbar, allow scroll */
-    body {-ms-overflow-style: none;scrollbar-width: none;overflow-y: scroll;}
-    body::-webkit-scrollbar {display: none;}
+    body {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      overflow-y: scroll;
+    }
+
+    body::-webkit-scrollbar {
+      display: none;
+    }
 
     h1 {
       margin: 0;
@@ -52,29 +68,43 @@
 </head>
 
 <body>
-  <h1>Mementō morī</h1>
+  <h1>Mementō Morī</h1>
   <div id="container">
     <div id="canvas"></div>
   </div>
 
   <script>
     (() => {
-      const SIZE_PIXEL = 12
-
-      const SIZE_WIDTH = SIZE_PIXEL * 55
-      const SIZE_HEIGHT = SIZE_PIXEL * 105
-
-      let container = document.getElementById('canvas')
-      container.width = SIZE_WIDTH
-      container.height = SIZE_HEIGHT
-      container.style.width = SIZE_WIDTH + 'px'
-      container.style.height = SIZE_HEIGHT + 'px'
-
       let grid = layer().create('grid', {
         target: container
       })
 
+      const setup = () => {
+        let SIZE_PIXEL = Math.floor(window.innerWidth / 60)
+        if (SIZE_PIXEL > 12) {
+          SIZE_PIXEL = 12
+        }
+
+        return {
+          SIZE_PIXEL,
+          SIZE_WIDTH: SIZE_PIXEL * 55,
+          SIZE_HEIGHT: SIZE_PIXEL * 105
+        }
+      }
+
       const paint = () => {
+        const {
+          SIZE_PIXEL,
+          SIZE_WIDTH,
+          SIZE_HEIGHT
+        } = setup()
+
+        let container = document.getElementById('canvas')
+        container.width = SIZE_WIDTH
+        container.height = SIZE_HEIGHT
+        container.style.width = SIZE_WIDTH + 'px'
+        container.style.height = SIZE_HEIGHT + 'px'
+
         if (grid) {
           grid.element.remove()
         }
@@ -94,6 +124,7 @@
         const getY = (year) => year * SIZE_PIXEL - offsetY
 
         const isHalf = (week) => week === 26
+        const isOverHalf = (week) => week > 26
         const isEow = (week) => week === 52
 
         const isGap = (year) => (year + 1) % 11 === 0
@@ -129,7 +160,7 @@
               }
             }
 
-            if (week > 26) {
+            if (isOverHalf(week)) {
               offsetX = SIZE_PIXEL / 2
             }
 
@@ -144,8 +175,8 @@
             // label
             if (isEow(week) && isGap(year + 1)) {
               text.print(grid, {
-                text: (year+1) - (year+1) % 10,
-                x: getX(week + 1) + SIZE_PIXEL/3,
+                text: (year + 1) - (year + 1) % 10,
+                x: getX(week + 1) + SIZE_PIXEL / 3,
                 y: getY(year),
                 textBaseline: 'top',
                 textAlign: 'left',
