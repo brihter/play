@@ -13,25 +13,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
   <script src="layer.js"></script>
   <script src="shape.js"></script>
+  <script src="text.js"></script>
   <script src="date.js"></script>
   <style>
     html,
     body {
       margin: 0;
       padding: 0 0 24px;
-      overflow-x: hidden;
-      overflow-y: scroll;
+      /* overflow: hidden; */
       width: 100%;
-      /* height: 100%; */
       text-align: center;
     }
 
+    /* feature: hide scrollbar, allow scroll */
+    body {-ms-overflow-style: none;scrollbar-width: none;overflow-y: scroll;}
+    body::-webkit-scrollbar {display: none;}
+
     h1 {
+      margin: 0;
+      padding: 24px 0;
+      font-size: 36px;
+      line-height: 36px;
       font-family: 'Libre Baskerville', serif;
       font-weight: 300;
       font-style: normal;
       line-height: initial;
-      font-size: 36px;
       text-transform: uppercase;
     }
 
@@ -54,8 +60,9 @@
   <script>
     (() => {
       const SIZE_PIXEL = 12
-      const SIZE_WIDTH = SIZE_PIXEL * 53
-      const SIZE_HEIGHT = SIZE_PIXEL * 109
+
+      const SIZE_WIDTH = SIZE_PIXEL * 55
+      const SIZE_HEIGHT = SIZE_PIXEL * 105
 
       let container = document.getElementById('canvas')
       container.width = SIZE_WIDTH
@@ -63,9 +70,7 @@
       container.style.width = SIZE_WIDTH + 'px'
       container.style.height = SIZE_HEIGHT + 'px'
 
-      let grid
-
-      grid = layer().create('grid', {
+      let grid = layer().create('grid', {
         target: container
       })
 
@@ -82,17 +87,30 @@
         let used = 0
         const weeksUsed = date.weeksBetween(new Date(1988, 1, 21), new Date())
 
+        let offsetX = 0
+        let offsetY = 0
+
+        const getX = (week) => week * SIZE_PIXEL - offsetX
+        const getY = (year) => year * SIZE_PIXEL - offsetY
+
+        const isHalf = (week) => week === 26
+        const isEow = (week) => week === 52
+
+        const isGap = (year) => (year + 1) % 11 === 0
+        const isRound = (year) => year % 10 === 0
+
         for (let year = 0; year <= 108; year++) {
+          offsetX = 0
+
+          if (year > 9 && year % 11 === 0) {
+            offsetY = (offsetY + SIZE_PIXEL / 2)
+          }
+
+          // row
           for (let week = 0; week <= 52; week++) {
             fill = '#000'
             used++
-
-            if (week === 26) {
-              fill = '#fff'
-              used--
-            }
-
-            if ((year + 1) % 11 === 0) {
+            if (isHalf(week) || isGap(year)) {
               fill = '#fff'
               used--
             }
@@ -111,12 +129,29 @@
               }
             }
 
+            if (week > 26) {
+              offsetX = SIZE_PIXEL / 2
+            }
+
+            // box
             shape.rectangle(grid, Object.assign({
-              x: week * SIZE_PIXEL,
-              y: year * SIZE_PIXEL,
-              width: SIZE_PIXEL - 4,
-              height: SIZE_PIXEL - 4
+              x: getX(week),
+              y: getY(year),
+              width: SIZE_PIXEL - (SIZE_PIXEL / 3),
+              height: SIZE_PIXEL - (SIZE_PIXEL / 3)
             }, opts))
+
+            // label
+            if (isEow(week) && isGap(year + 1)) {
+              text.print(grid, {
+                text: (year+1) - (year+1) % 10,
+                x: getX(week + 1) + SIZE_PIXEL/3,
+                y: getY(year),
+                textBaseline: 'top',
+                textAlign: 'left',
+                font: '10px sans-serif'
+              })
+            }
           }
         }
       }
