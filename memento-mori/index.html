@@ -5,66 +5,124 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="Bostjan Rihter">
-  <meta itemprop="name" content="Mementō morī">
-  <title>Mementō morī</title>
+  <meta itemprop="name" content="Mementō Morī">
+  <title>Mementō Morī</title>
   <meta itemprop="description" content="Remember that you (have to) die.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
   <script src="layer.js"></script>
   <script src="shape.js"></script>
-  <script src="fx.js"></script>
+  <script src="date.js"></script>
   <style>
     html,
     body {
       margin: 0;
-      padding: 0;
-      overflow: hidden;
+      padding: 0 0 24px;
+      overflow-x: hidden;
+      overflow-y: scroll;
+      width: 100%;
+      /* height: 100%; */
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Libre Baskerville', serif;
+      font-weight: 300;
+      font-style: normal;
+      line-height: initial;
+      font-size: 36px;
+      text-transform: uppercase;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
     }
   </style>
 </head>
 
 <body>
+  <h1>Mementō morī</h1>
+  <div id="container">
+    <div id="canvas"></div>
+  </div>
+
   <script>
     (() => {
+      const SIZE_PIXEL = 12
+      const SIZE_WIDTH = SIZE_PIXEL * 53
+      const SIZE_HEIGHT = SIZE_PIXEL * 109
+
+      let container = document.getElementById('canvas')
+      container.width = SIZE_WIDTH
+      container.height = SIZE_HEIGHT
+      container.style.width = SIZE_WIDTH + 'px'
+      container.style.height = SIZE_HEIGHT + 'px'
+
       let grid
 
-      grid = layer().create('grid')
-      const PIXEL_SIZE = 12
+      grid = layer().create('grid', {
+        target: container
+      })
 
-      let fill = '#000'
+      const paint = () => {
+        if (grid) {
+          grid.element.remove()
+        }
 
-      for (let year = 0; year <= 108; year++) {
-        for (let week = 0; week <= 52; week++) {
-          fill = '#000'
+        grid = layer().create('grid', {
+          target: document.getElementById('canvas')
+        })
 
-          if (week === 26) {
-            fill = '#fff'
-          }
+        let fill = '#000'
+        let used = 0
+        const weeksUsed = date.weeksBetween(new Date(1988, 1, 21), new Date())
 
-          if ((year + 1) % 11 === 0) {
-            fill = '#fff'
-          }
+        for (let year = 0; year <= 108; year++) {
+          for (let week = 0; week <= 52; week++) {
+            fill = '#000'
+            used++
 
-          let opts = {}
-          if (year < 34) {
-            opts = {
-              fillStyle: fill,
-              strokeStyle: fill,
-              lineWidth: 1.0
+            if (week === 26) {
+              fill = '#fff'
+              used--
             }
-          } else {
-            opts = {
-              strokeStyle: fill,
-              lineWidth: 1.0
-            }
-          }
 
-          shape.rectangle(grid, Object.assign({
-            x: week * PIXEL_SIZE,
-            y: year * PIXEL_SIZE,
-            width: PIXEL_SIZE - 4,
-            height: PIXEL_SIZE - 4
-          }, opts))
+            if ((year + 1) % 11 === 0) {
+              fill = '#fff'
+              used--
+            }
+
+            let opts = {}
+            if (used < weeksUsed) {
+              opts = {
+                fillStyle: fill,
+                strokeStyle: fill,
+                lineWidth: 1.0
+              }
+            } else {
+              opts = {
+                strokeStyle: fill,
+                lineWidth: 1.0
+              }
+            }
+
+            shape.rectangle(grid, Object.assign({
+              x: week * SIZE_PIXEL,
+              y: year * SIZE_PIXEL,
+              width: SIZE_PIXEL - 4,
+              height: SIZE_PIXEL - 4
+            }, opts))
+          }
         }
       }
+
+      window.addEventListener('resize', paint)
+      paint()
     })()
   </script>
 </body>

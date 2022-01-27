@@ -1,41 +1,25 @@
 const layer = () => {
-  const toMatrix = ({ layer, size }) => {
-    const pixels = layer.ctx.getImageData(0, 0, layer.width, layer.height).data
+  const create = (name, cfg = {}) => {
+    let target = cfg.target || document.body
 
-    const matrix = []
-    for (let i = 0; i < layer.height; i += size) {
-      for (let j = 0; j < layer.width; j += size) {
-        const alpha = pixels[(j + i * layer.width) * 4 + 3]
-
-        if (alpha === 0) {
-          continue
-        }
-
-        matrix.push([
-          Math.floor(j),
-          Math.floor(i)
-        ])
-      }
-    }
-
-    return matrix
-  }
-
-  const create = (name, cfg) => {
     const element = document.createElement('canvas')
+    const box = target.getBoundingClientRect()
 
-    element.width = window.innerWidth
-    element.height = window.innerHeight
+    // element.width = window.innerWidth
+    // element.height = window.innerHeight
+    // element.style.position = 'absolute'
+    // element.style.top = 0
+    // element.style.left = 0
+
+    element.width = box.width
+    element.height = box.height
     element.style.width = '100%'
     element.style.height = '100%'
-    element.style.position = 'absolute'
-    element.style.top = 0
-    element.style.left = 0
 
     let ctx = element.getContext('2d')
     ctx = Object.assign(ctx, cfg)
 
-    document.body.appendChild(element)
+    target.appendChild(element)
 
     return {
       name,
@@ -47,7 +31,6 @@ const layer = () => {
   }
 
   return {
-    create,
-    toMatrix
+    create
   }
 }

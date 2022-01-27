@@ -1,4 +1,5 @@
-// see http://diveintohtml5.info/canvas.html for 0.5px offsets
+// note
+// for 0.5px offsets see http://diveintohtml5.info/canvas.html
 
 const shape = {}
 
