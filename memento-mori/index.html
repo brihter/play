@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Bostjan Rihter">
+  <meta itemprop="name" content="Mementō Morī">
+  <title>Mementō Morī</title>
+  <meta itemprop="description" content="Remember that you (have to) die.">
+  <!-- social -->
+  <meta itemprop="image" content="https://brihter.github.io/play/memento-mori/preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mementō Morī">
+  <meta name="twitter:description" content="Remember that you (have to) die.">
+  <meta name="twitter:image:src" content="https://brihter.github.io/play/memento-mori/preview.png">
+  <meta property="og:title" content="Mementō Morī" />
+  <meta property="og:description" content="Remember that you (have to) die." />
+  <meta property="og:image" content="https://brihter.github.io/play/memento-mori/preview.png" />
+  <!-- font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+  <!-- js -->
+  <script src="layer.js"></script>
+  <script src="shape.js"></script>
+  <script src="text.js"></script>
+  <script src="date.js"></script>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0 0 24px;
+      width: 100%;
+      text-align: center;
+    }
+
+    body {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      overflow-y: scroll;
+    }
+
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    h1 {
+      margin: 0;
+      padding: 24px 0;
+      font-size: 36px;
+      line-height: 36px;
+      font-family: 'Libre Baskerville', serif;
+      font-weight: 300;
+      font-style: normal;
+      line-height: initial;
+      text-transform: uppercase;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Mementō Morī</h1>
+  <div id="container">
+    <div id="canvas"></div>
+  </div>
+
+  <script>
+    (() => {
+      let grid = layer().create('grid', {
+        target: container
+      })
+
+      const setup = () => {
+        let SIZE_PIXEL = Math.floor(window.innerWidth / 60)
+        if (SIZE_PIXEL > 12) {
+          SIZE_PIXEL = 12
+        }
+
+        return {
+          SIZE_PIXEL,
+          SIZE_WIDTH: SIZE_PIXEL * 55,
+          SIZE_HEIGHT: SIZE_PIXEL * 105
+        }
+      }
+
+      const paint = () => {
+        const {
+          SIZE_PIXEL,
+          SIZE_WIDTH,
+          SIZE_HEIGHT
+        } = setup()
+
+        let container = document.getElementById('canvas')
+        container.width = SIZE_WIDTH
+        container.height = SIZE_HEIGHT
+        container.style.width = SIZE_WIDTH + 'px'
+        container.style.height = SIZE_HEIGHT + 'px'
+
+        if (grid) {
+          grid.element.remove()
+        }
+
+        grid = layer().create('grid', {
+          target: document.getElementById('canvas')
+        })
+
+        let fill = '#000'
+        let used = 0
+        const weeksUsed = date.weeksBetween(new Date(1988, 1, 21), new Date())
+
+        let offsetX = 0
+        let offsetY = 0
+
+        const getX = (week) => week * SIZE_PIXEL - offsetX
+        const getY = (year) => year * SIZE_PIXEL - offsetY
+
+        const isHalf = (week) => week === 26
+        const isOverHalf = (week) => week > 26
+        const isEow = (week) => week === 52
+
+        const isGap = (year) => (year + 1) % 11 === 0
+        const isRound = (year) => year % 10 === 0
+
+        for (let year = 0; year <= 108; year++) {
+          offsetX = 0
+
+          if (year > 9 && year % 11 === 0) {
+            offsetY = (offsetY + SIZE_PIXEL / 2)
+          }
+
+          // row
+          for (let week = 0; week <= 52; week++) {
+            fill = '#000'
+            used++
+            if (isHalf(week) || isGap(year)) {
+              fill = '#fff'
+              used--
+            }
+
+            let opts = {}
+            if (used < weeksUsed) {
+              opts = {
+                fillStyle: fill,
+                strokeStyle: fill,
+                lineWidth: 1.0
+              }
+            } else {
+              opts = {
+                strokeStyle: fill,
+                lineWidth: 1.0
+              }
+            }
+
+            if (isOverHalf(week)) {
+              offsetX = SIZE_PIXEL / 2
+            }
+
+            // box
+            shape.rectangle(grid, Object.assign({
+              x: getX(week),
+              y: getY(year),
+              width: SIZE_PIXEL - (SIZE_PIXEL / 3),
+              height: SIZE_PIXEL - (SIZE_PIXEL / 3)
+            }, opts))
+
+            // label
+            if (isEow(week) && isGap(year + 1)) {
+              text.print(grid, {
+                text: (year + 1) - (year + 1) % 10,
+                x: getX(week + 1) + SIZE_PIXEL / 3,
+                y: getY(year),
+                textBaseline: 'top',
+                textAlign: 'left',
+                font: '10px sans-serif'
+              })
+            }
+          }
+        }
+      }
+
+      window.addEventListener('resize', paint)
+      paint()
+    })()
+  </script>
+</body>
+
+</html>
