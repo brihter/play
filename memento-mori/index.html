@@ -117,31 +117,28 @@
         let used = 0
         const weeksUsed = date.weeksBetween(new Date(1988, 1, 21), new Date())
 
-        let offsetX = 0
         let offsetY = 0
 
-        const getX = (week) => week * SIZE_PIXEL - offsetX
+        const getX = (week) => week * SIZE_PIXEL
         const getY = (year) => year * SIZE_PIXEL - offsetY
 
         const isHalf = (week) => week === 26
         const isOverHalf = (week) => week > 26
-        const isEow = (week) => week === 52
+        const isEow = (week) => week === 51
 
         const isGap = (year) => (year + 1) % 11 === 0
         const isRound = (year) => year % 10 === 0
 
         for (let year = 0; year <= 108; year++) {
-          offsetX = 0
-
           if (year > 9 && year % 11 === 0) {
             offsetY = (offsetY + SIZE_PIXEL / 2)
           }
 
           // row
-          for (let week = 0; week <= 52; week++) {
+          for (let week = 0; week < 52; week++) {
             fill = '#000'
             used++
-            if (isHalf(week) || isGap(year)) {
+            if (isGap(year)) {
               fill = '#fff'
               used--
             }
@@ -158,10 +155,6 @@
                 strokeStyle: fill,
                 lineWidth: 1.0
               }
-            }
-
-            if (isOverHalf(week)) {
-              offsetX = SIZE_PIXEL / 2
             }
 
             // box
