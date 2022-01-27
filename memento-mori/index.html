@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Bostjan Rihter">
+  <meta itemprop="name" content="Mementō morī">
+  <title>Mementō morī</title>
+  <meta itemprop="description" content="Remember that you (have to) die.">
+  <script src="layer.js"></script>
+  <script src="shape.js"></script>
+  <script src="fx.js"></script>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    (() => {
+      let grid
+
+      grid = layer().create('grid')
+      const PIXEL_SIZE = 12
+
+      let fill = '#000'
+
+      for (let year = 0; year <= 108; year++) {
+        for (let week = 0; week <= 52; week++) {
+          fill = '#000'
+
+          if (week === 26) {
+            fill = '#fff'
+          }
+
+          if ((year + 1) % 11 === 0) {
+            fill = '#fff'
+          }
+
+          let opts = {}
+          if (year < 34) {
+            opts = {
+              fillStyle: fill,
+              strokeStyle: fill,
+              lineWidth: 1.0
+            }
+          } else {
+            opts = {
+              strokeStyle: fill,
+              lineWidth: 1.0
+            }
+          }
+
+          shape.rectangle(grid, Object.assign({
+            x: week * PIXEL_SIZE,
+            y: year * PIXEL_SIZE,
+            width: PIXEL_SIZE - 4,
+            height: PIXEL_SIZE - 4
+          }, opts))
+        }
+      }
+    })()
+  </script>
+</body>
+
+</html>
