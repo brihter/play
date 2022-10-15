@@ -21,27 +21,52 @@
       image-rendering: pixelated;
     }
 
-    p {
-      position: fixed;
-      left: 50%;
-      bottom: 10px;
-      transform: translate(-50%, 0%);
-      margin: 0 auto;
-      background-color: #fff;
-      z-index: 2;
-      padding: 8px 8px 4px 8px;
-    }
-    
     a,
     a:visited {
       text-decoration: none;
       color: #000;
     }
+
+    div {
+      background-color: #fff;
+      z-index: 2;
+      padding: 8px 8px 4px 8px;
+    }
+
+    ul {
+      margin: 8px 0 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .dock {
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translate(-50%, 0%);
+      margin: 0 auto;
+    }
+
+    .dock-right {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      transform: translate(0%, 0%);
+      margin: 0 auto;
+    }
   </style>
 </head>
 
 <body>
-  <p>"Video Game City" by <a href="https://twitter.com/armyoftrolls" target="_blank">@armyoftrolls</a></p>
+  <div class="dock">"Video Game City" by <a href="https://twitter.com/armyoftrolls" target="_blank">@armyoftrolls</a></div>
+  <div class="dock-right">
+    Controls:
+    <ul>
+      <li>- scroll to zoom</li>
+      <li>- drag to move</li>
+    </ul>
+  </div>
+  
   <script src="build/place.js"></script>
   <script>
     const { Canvas } = Place.ui
