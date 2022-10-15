@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>place</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: monospace;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    canvas {
+      background-color: #fff;
+      image-rendering: pixelated;
+    }
+
+    p {
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translate(-50%, 0%);
+      margin: 0 auto;
+      background-color: #fff;
+      z-index: 2;
+      padding: 8px 8px 4px 8px;
+    }
+    
+    a,
+    a:visited {
+      text-decoration: none;
+      color: #000;
+    }
+  </style>
+</head>
+
+<body>
+  <p>"Video Game City" by <a href="https://twitter.com/armyoftrolls" target="_blank">@armyoftrolls</a></p>
+  <script src="build/place.js"></script>
+  <script>
+    const { Canvas } = Place.ui
+
+    const canvas = new Canvas({
+      width: 960,
+      height: 540,
+      renderTo: 'body'
+    })
+
+    canvas.load('static/city.png')
+    canvas.scale(1)
+    canvas.center()
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "canvas-move",
+  "version": "1.0.0",
+  "description": "",
+  "main": "canvas.js",
+  "scripts": {
+    "watch": "npx nodemon -e js,mjs --ignore '.git/' --ignore '.github/' --ignore 'node_modules/' --ignore build/ --ignore ops/ --exec ./bin/watch.sh",
+    "build": "./bin/build.sh"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.15.10",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.7.1"
+  },
+  "prettier": {
+    "trailingComma": "none",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true
+  }
+}
