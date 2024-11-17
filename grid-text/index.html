@@ -1,178 +1,143 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta itemprop="name" content="Grid Text">
-  <meta itemprop="description" content="Grid Text">
-  <meta name="author" content="Bostjan Rihter">
   <title>Grid Text</title>
   <style>
-    html,
     body {
       margin: 0;
-      padding: 0;
       overflow: hidden;
-      background: '#000';
+      background: #000;
+    }
+    canvas {
+      display: block;
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
 </head>
-
 <body>
-  <script>
-    const config = {
-      bg: '#000',
-      textColor: 255,
-      textOpacity: 50,
-      cellSize: 18,
-      fontSize: 12,
-      line1: 'Grid',
-      line2: 'Text',
-      frameRate: 10
-    }
+<script>
+const config = {
+  bg: '#000',
+  textColor: 255,
+  textOpacity: 50,
+  cellSize: 16,
+  fontSize: 12,
+  line1: 'Grid',
+  line2: 'Text',
+  frameRate: 6,
+  moveInterval: 6000
+}
 
-    const chars = new Array(62)
-    for (let i = 0; i < 10; i++) chars[i] = String.fromCharCode(i + 48)
-    for (let i = 0; i < 26; i++) chars[i + 10] = String.fromCharCode(i + 97)
-    for (let i = 0; i < 26; i++) chars[i + 36] = String.fromCharCode(i + 65)
+const chars = [...Array(10)].map((_, i) => String.fromCharCode(i + 48))
+  .concat([...Array(26)].map((_, i) => String.fromCharCode(i + 97)))
+  .concat([...Array(26)].map((_, i) => String.fromCharCode(i + 65)))
 
-    const charCount = chars.length
-    const line1Length = config.line1.length
-    const line2Length = config.line2.length
-    const halfCellSize = config.cellSize / 2
-    const updateInterval = 50
+let cols, rows, verticalRow, startCol, grid = [], xPos = [], yPos = []
+let normalStyle, fadeStyle
+let dirtyColumns = new Set()
+let lastUpdate = 0
+let lastMove = 0
+const updateInterval = 50
 
-    let cols
-    let rows
-    let verticalRow
-    let startCol
-    let lastUpdate = 0
-    let grid = []
-    let xPositions = []
-    let yPositions = []
-    let dirtyColumns = new Set()
+function setup() {
+  pixelDensity(2)
+  createCanvas(windowWidth, windowHeight)
+  frameRate(config.frameRate)
+  textFont('Courier New')
+  textSize(config.fontSize)
+  textAlign(CENTER, CENTER)
+  
+  normalStyle = color(config.textColor)
+  fadeStyle = color(config.textColor, config.textOpacity)
+  
+  updateGrid()
+}
 
-    let normalStyle
-    let fadeStyle
+function updateGrid() {
+  cols = floor(width / config.cellSize)
+  rows = floor(height / config.cellSize)
+  verticalRow = floor(random(5, 21))
+  startCol = floor(random(0, cols - 8))
+  
+  const halfCell = config.cellSize / 2
+  xPos = Array(cols).fill().map((_, i) => i * config.cellSize + halfCell)
+  yPos = Array(rows).fill().map((_, i) => i * config.cellSize + halfCell)
+  
+  grid = Array(cols).fill().map(() => 
+    Array(rows).fill().map(() => chars[floor(random(chars.length))])
+  )
+}
 
-    function setup() {
-      createCanvas(windowWidth, windowHeight)
-      frameRate(config.frameRate)
-      textFont('Courier New')
-      textSize(config.fontSize)
-      textAlign(CENTER, CENTER)
-
-      normalStyle = color(config.textColor)
-      fadeStyle = color(config.textColor, config.textOpacity)
-
-      updateGridParameters()
-    }
-
-    function updateGridParameters() {
-      cols = floor(width / config.cellSize)
-      rows = floor(height / config.cellSize)
-      verticalRow = floor(random(5, 21))
-      startCol = floor(random(0, cols - 8))
-
-      xPositions = new Array(cols)
-      yPositions = new Array(rows)
-
-      for (let i = 0; i < cols; i++) {
-        xPositions[i] = i * config.cellSize + halfCellSize
-      }
-
-      for (let j = 0; j < rows; j++) {
-        yPositions[j] = j * config.cellSize + halfCellSize
-      }
-
-      grid = new Array(cols)
-      for (let i = 0; i < cols; i++) {
-        grid[i] = new Array(rows)
-        for (let j = 0; j < rows; j++) {
-          grid[i][j] = chars[floor(random(charCount))]
-        }
+function updateChars() {
+  const l1len = config.line1.length
+  const l2len = config.line2.length
+  
+  dirtyColumns.forEach(col => {
+    for (let j = 0; j < rows; j++) {
+      if (!(col >= startCol && col < startCol + (j === verticalRow ? l1len : l2len) && 
+          (j === verticalRow || j === verticalRow + 1))) {
+        grid[col][j] = chars[floor(random(chars.length))]
       }
     }
+  })
+  dirtyColumns.clear()
+}
 
-    function markColumnDirty(col) {
-      dirtyColumns.add(col)
+function draw() {
+  const now = millis()
+  
+  if (now - lastUpdate > updateInterval) {
+    lastUpdate = now
+    for (let i = 0; i < cols; i++) dirtyColumns.add(i)
+    updateChars()
+    background(config.bg)
+  }
+  
+  if (now - lastMove > config.moveInterval) {
+    lastMove = now
+    const oldVRow = verticalRow
+    const oldSCol = startCol
+    verticalRow = floor(random(5, 21))
+    startCol = floor(random(0, cols - 8))
+    
+    const minCol = Math.min(oldSCol, startCol)
+    const maxCol = Math.max(
+      oldSCol + Math.max(config.line1.length, config.line2.length),
+      startCol + Math.max(config.line1.length, config.line2.length)
+    )
+    
+    for (let i = minCol; i <= maxCol && i < cols; i++) dirtyColumns.add(i)
+  }
+
+  const y1 = yPos[verticalRow]
+  const y2 = yPos[verticalRow + 1]
+  
+  fill(normalStyle)
+  for (let i = 0; i < config.line1.length && startCol + i < cols; i++) {
+    text(config.line1[i], xPos[startCol + i], y1)
+  }
+  for (let i = 0; i < config.line2.length && startCol + i < cols; i++) {
+    text(config.line2[i], xPos[startCol + i], y2)
+  }
+  
+  fill(fadeStyle)
+  for (let i = 0; i < cols; i++) {
+    const x = xPos[i]
+    const inRange = i >= startCol && i < startCol + Math.max(config.line1.length, config.line2.length)
+    
+    for (let j = 0; j < rows; j++) {
+      if (inRange && (j === verticalRow || j === verticalRow + 1)) continue
+      text(grid[i][j], x, yPos[j])
     }
+  }
+}
 
-    function updateRandomCharacters() {
-      for (const col of dirtyColumns) {
-        for (let j = 0; j < rows; j++) {
-          if (j !== verticalRow && j !== verticalRow + 1) {
-            grid[col][j] = chars[floor(random(charCount))]
-          }
-        }
-      }
-      dirtyColumns.clear()
-    }
-
-    function draw() {
-      const now = millis()
-      const shouldUpdateChars = now - lastUpdate > updateInterval
-
-      if (shouldUpdateChars) {
-        lastUpdate = now
-        for (let i = 0; i < cols; i++) {
-          markColumnDirty(i)
-        }
-        updateRandomCharacters()
-      }
-
-      if (frameCount === 1 || shouldUpdateChars) {
-        background(config.bg)
-      }
-
-      const line1Y = yPositions[verticalRow]
-      const line2Y = yPositions[verticalRow + 1]
-
-      fill(normalStyle)
-      for (let i = 0; i < line1Length && startCol + i < cols; i++) {
-        text(config.line1[i], xPositions[startCol + i], line1Y)
-      }
-      for (let i = 0; i < line2Length && startCol + i < cols; i++) {
-        text(config.line2[i], xPositions[startCol + i], line2Y)
-      }
-
-      fill(fadeStyle)
-      for (let i = 0; i < cols; i++) {
-        const x = xPositions[i]
-        const isInNameRange = i >= startCol && i < startCol + Math.max(line1Length, line2Length)
-
-        for (let j = 0; j < rows; j++) {
-          if (isInNameRange && (j === verticalRow || j === verticalRow + 1)) {
-            continue
-          }
-          text(grid[i][j], x, yPositions[j])
-        }
-      }
-
-      if (frameCount % 180 === 0) {
-        const oldVerticalRow = verticalRow
-        const oldStartCol = startCol
-
-        verticalRow = floor(random(5, 21))
-        startCol = floor(random(0, cols - 8))
-
-        const minCol = Math.min(oldStartCol, startCol)
-        const maxCol = Math.max(oldStartCol + Math.max(line1Length, line2Length),
-          startCol + Math.max(line1Length, line2Length))
-
-        for (let i = minCol; i <= maxCol; i++) {
-          if (i < cols) markColumnDirty(i)
-        }
-      }
-    }
-
-    function windowResized() {
-      resizeCanvas(windowWidth, windowHeight)
-      updateGridParameters()
-    }
-  </script>
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight)
+  updateGrid()
+}
+</script>
 </body>
-
 </html>
