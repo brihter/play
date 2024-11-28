@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>anomaly</title>
+  <meta itemprop="name" content="anomaly">
+  <meta itemprop="description" content="anomaly">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.2/lib/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+    body{margin:0;background:#000;overflow:hidden;font-family:'Inter',sans-serif}
+  </style>
+</head>
+<body>
+  <script>
+    const cfg = {
+      fontSize: 48,
+      glitchDuration: 250,
+      minInterval: 1000,
+      maxInterval: 3000,
+      sliceCount: 8
+    }
+
+    const state = {
+      baseBuffer: null,
+      slices: [],
+      nextTime: 0,
+      isGlitching: false
+    }
+
+    const generateSlices = () => Array(cfg.sliceCount).fill().map(() => ({
+      yPos: random(innerHeight/2 - cfg.fontSize, innerHeight/2 + cfg.fontSize/2),
+      height: random(2, 6),
+      offset: random(-cfg.fontSize/2, cfg.fontSize/2),
+      width: random() < 0.2 ? random(100, innerWidth) : innerWidth,
+      xPos: random() < 0.2 ? random(innerWidth/2 - 300, innerWidth/2 + 300) : 0
+    }))
+
+    const handleGlitchEffect = now => {
+      image(state.baseBuffer, 0, 0)
+      state.slices.forEach(({xPos, yPos, width, height, offset}) => 
+        copy(xPos, yPos, width, height, xPos + offset, yPos, width, height)
+      )
+      
+      if (frameCount % 3 === 0) state.slices = generateSlices()
+      
+      if (now > state.nextTime) {
+        state.isGlitching = false
+        state.nextTime = now + random(cfg.minInterval, cfg.maxInterval)
+      }
+    }
+
+    window.setup = () => {
+      const canvas = createCanvas(innerWidth, innerHeight)
+      canvas.position(0, 0)
+      
+      state.baseBuffer = createGraphics(width, height)
+      state.baseBuffer.textFont('Inter')
+      state.baseBuffer.textAlign(CENTER, CENTER)
+      state.baseBuffer.textSize(cfg.fontSize)
+      state.slices = generateSlices()
+    }
+
+    window.draw = () => {
+      const now = millis()
+      
+      state.baseBuffer.background(0)
+      state.baseBuffer.fill(255)
+      state.baseBuffer.text('anomaly', width/2, height/2)
+
+      if (!state.isGlitching && now > state.nextTime) {
+        state.isGlitching = true
+        state.nextTime = now + cfg.glitchDuration
+      }
+
+      state.isGlitching ? handleGlitchEffect(now) : image(state.baseBuffer, 0, 0)
+    }
+
+    window.windowResized = () => {
+      resizeCanvas(innerWidth, innerHeight)
+      state.baseBuffer.resizeCanvas(width, height)
+      state.slices = generateSlices()
+    }
+  </script>
+</body>
+</html>
