@@ -51,7 +51,7 @@ const game = () => {
 
     const path = []
 
-    let length = rnd(15,35)
+    let length = rnd(30,100)
     let current = seed()
     path.push(current)
     while (length > 0) {
@@ -67,13 +67,23 @@ const game = () => {
   lines = new Map()
 
   const generate = () => {
-    while (lines.size < 10) {
+    while (lines.size < 20) {
       lines.set(lineCount, makeLine())
       lineCount++
     }
   }
 
   const paint = () => {
+    const ctx = background.ctx
+
+    // set style once
+    ctx.save()
+    ctx.strokeStyle = '#000'
+    ctx.lineWidth = WIDTH
+    ctx.globalAlpha = 0.25
+
+    ctx.beginPath()
+
     lines.forEach((line) => {
       const { index, prevIndex, path } = line
 
@@ -83,19 +93,21 @@ const game = () => {
         return
       }
 
-      shape.line(background, {
-        x0: path[prevIndex][0],
-        y0: path[prevIndex][1],
-        x1: path[index][0],
-        y1: path[index][1],
-        strokeStyle: '#000',
-        lineWidth: WIDTH,
-        globalAlpha: 0.25
-      })
+      const x0 = path[prevIndex][0]
+      const y0 = path[prevIndex][1]
+      const x1 = path[index][0]
+      const y1 = path[index][1]
+
+      // keep your crisp alignment trick
+      ctx.moveTo(x0 + 0.5, y0 + 0.5)
+      ctx.lineTo(x1 + 0.5, y1 + 0.5)
 
       line.prevIndex = index
       line.index = line.index + 1
     })
+
+    ctx.stroke()
+    ctx.restore()
   }
 
   const destroy = () => {
@@ -108,7 +120,7 @@ const game = () => {
     })
   }
 
-  const fps = 30
+  const fps = 60
   const fpsDelta = parseInt(1000 / fps)
   let lastFrameTime = 0
 
