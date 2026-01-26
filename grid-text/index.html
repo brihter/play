@@ -39,107 +39,156 @@ const config = {
   moveInterval: 6000
 }
 
-const chars = [...Array(10)].map((_, i) => String.fromCharCode(i + 48))
-  .concat([...Array(26)].map((_, i) => String.fromCharCode(i + 97)))
-  .concat([...Array(26)].map((_, i) => String.fromCharCode(i + 65)))
+const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 let cols, rows, verticalRow, startCol, grid = [], xPos = [], yPos = []
 let normalStyle, fadeStyle
-let dirtyColumns = new Set()
 let lastUpdate = 0
 let lastMove = 0
 const updateInterval = 50
 
+// Performance: pre-rendered character sprites and off-screen buffer
+let charSprites = {}
+let fadeSprites = {}
+let bgBuffer = null
+let needsRedraw = true
+
 function setup() {
-  pixelDensity(2)
+  pixelDensity(window.devicePixelRatio > 1 ? 2 : 1)
   createCanvas(windowWidth, windowHeight)
   frameRate(config.frameRate)
   textFont('Courier New')
   textSize(config.fontSize)
   textAlign(CENTER, CENTER)
-  
+
   normalStyle = color(config.textColor)
   fadeStyle = color(config.textColor, config.textOpacity)
-  
+
+  // Pre-render all characters as sprites for fast blitting
+  preRenderCharSprites()
+
   updateGrid()
+}
+
+function preRenderCharSprites() {
+  const size = config.cellSize
+
+  for (let i = 0; i < chars.length; i++) {
+    const c = chars[i]
+
+    // Normal brightness sprite
+    const normal = createGraphics(size, size)
+    normal.textFont('Courier New')
+    normal.textSize(config.fontSize)
+    normal.textAlign(CENTER, CENTER)
+    normal.fill(config.textColor)
+    normal.text(c, size / 2, size / 2)
+    charSprites[c] = normal
+
+    // Faded sprite
+    const faded = createGraphics(size, size)
+    faded.textFont('Courier New')
+    faded.textSize(config.fontSize)
+    faded.textAlign(CENTER, CENTER)
+    faded.fill(config.textColor, config.textOpacity)
+    faded.text(c, size / 2, size / 2)
+    fadeSprites[c] = faded
+  }
 }
 
 function updateGrid() {
   cols = floor(width / config.cellSize)
   rows = floor(height / config.cellSize)
-  verticalRow = floor(random(5, 21))
+  verticalRow = floor(random(5, rows - 5))
   startCol = floor(random(0, cols - 8))
-  
+
   const halfCell = config.cellSize / 2
   xPos = Array(cols).fill().map((_, i) => i * config.cellSize + halfCell)
   yPos = Array(rows).fill().map((_, i) => i * config.cellSize + halfCell)
-  
-  grid = Array(cols).fill().map(() => 
+
+  grid = Array(cols).fill().map(() =>
     Array(rows).fill().map(() => chars[floor(random(chars.length))])
   )
+
+  // Create or resize off-screen buffer
+  if (!bgBuffer || bgBuffer.width !== width || bgBuffer.height !== height) {
+    if (bgBuffer) bgBuffer.remove()
+    bgBuffer = createGraphics(width, height)
+  }
+
+  needsRedraw = true
 }
 
 function updateChars() {
   const l1len = config.line1.length
   const l2len = config.line2.length
-  
-  dirtyColumns.forEach(col => {
+  const charsLen = chars.length
+
+  // Update all cells except where text overlay is
+  for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
-      if (!(col >= startCol && col < startCol + (j === verticalRow ? l1len : l2len) && 
+      if (!(i >= startCol && i < startCol + (j === verticalRow ? l1len : l2len) &&
           (j === verticalRow || j === verticalRow + 1))) {
-        grid[col][j] = chars[floor(random(chars.length))]
+        grid[i][j] = chars[floor(random(charsLen))]
       }
     }
-  })
-  dirtyColumns.clear()
+  }
+
+  needsRedraw = true
+}
+
+function renderBackgroundToBuffer() {
+  bgBuffer.background(config.bg)
+
+  const size = config.cellSize
+  const maxLen = Math.max(config.line1.length, config.line2.length)
+
+  // Use image() with pre-rendered sprites instead of text() calls
+  for (let i = 0; i < cols; i++) {
+    const x = i * size
+    const inRange = i >= startCol && i < startCol + maxLen
+
+    for (let j = 0; j < rows; j++) {
+      if (inRange && (j === verticalRow || j === verticalRow + 1)) continue
+      bgBuffer.image(fadeSprites[grid[i][j]], x, j * size)
+    }
+  }
 }
 
 function draw() {
   const now = millis()
-  
+
   if (now - lastUpdate > updateInterval) {
     lastUpdate = now
-    for (let i = 0; i < cols; i++) dirtyColumns.add(i)
     updateChars()
-    background(config.bg)
-  }
-  
-  if (now - lastMove > config.moveInterval) {
-    lastMove = now
-    const oldVRow = verticalRow
-    const oldSCol = startCol
-    verticalRow = floor(random(5, 21))
-    startCol = floor(random(0, cols - 8))
-    
-    const minCol = Math.min(oldSCol, startCol)
-    const maxCol = Math.max(
-      oldSCol + Math.max(config.line1.length, config.line2.length),
-      startCol + Math.max(config.line1.length, config.line2.length)
-    )
-    
-    for (let i = minCol; i <= maxCol && i < cols; i++) dirtyColumns.add(i)
   }
 
-  const y1 = yPos[verticalRow]
-  const y2 = yPos[verticalRow + 1]
-  
-  fill(normalStyle)
+  if (now - lastMove > config.moveInterval) {
+    lastMove = now
+    verticalRow = floor(random(5, rows - 5))
+    startCol = floor(random(0, cols - 8))
+    needsRedraw = true
+  }
+
+  // Only re-render background buffer when needed
+  if (needsRedraw) {
+    renderBackgroundToBuffer()
+    needsRedraw = false
+  }
+
+  // Blit the pre-rendered background (single image call)
+  image(bgBuffer, 0, 0)
+
+  // Draw foreground text using sprites
+  const size = config.cellSize
+  const y1 = verticalRow * size
+  const y2 = (verticalRow + 1) * size
+
   for (let i = 0; i < config.line1.length && startCol + i < cols; i++) {
-    text(config.line1[i], xPos[startCol + i], y1)
+    image(charSprites[config.line1[i]], (startCol + i) * size, y1)
   }
   for (let i = 0; i < config.line2.length && startCol + i < cols; i++) {
-    text(config.line2[i], xPos[startCol + i], y2)
-  }
-  
-  fill(fadeStyle)
-  for (let i = 0; i < cols; i++) {
-    const x = xPos[i]
-    const inRange = i >= startCol && i < startCol + Math.max(config.line1.length, config.line2.length)
-    
-    for (let j = 0; j < rows; j++) {
-      if (inRange && (j === verticalRow || j === verticalRow + 1)) continue
-      text(grid[i][j], x, yPos[j])
-    }
+    image(charSprites[config.line2[i]], (startCol + i) * size, y2)
   }
 }
 
@@ -147,6 +196,7 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight)
   updateGrid()
 }
+
 </script>
 </body>
 </html>
