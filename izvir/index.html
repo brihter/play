@@ -38,18 +38,25 @@
   <script>
     (() => {
       const { toMatrix } = layer()
-      const { rnd } = math()
 
       const FACTOR = 3
-      const FPS = 30
+      const FPS = 60
       const FPS_DELTA = parseInt(1000 / FPS)
       const PIXEL_SIZE = 6
 
       const COLOR_DARK = 'rgb(26, 26, 26)'
       const COLOR_LIGHT = 'rgb(218, 218, 218)'
-      const COLOR_PALETTE_1 = ['#c1c1c1', '#a7a7a7', '#8e8e8e', '#747474', '#5b5b5b'] // white
-      const COLOR_PALETTE_2 = ['#5EE6CD', '#129A81', '#008067', '#00674E', '#004D34'] // green
-      // const COLOR_PALETTE_3 = ['#ed1c24', '#D4030B', '#BA0000', '#A10000', '#870000']
+
+      // Pre-parse color palettes to RGB arrays for direct ImageData manipulation
+      const parseColor = (hex) => {
+        const r = parseInt(hex.slice(1, 3), 16)
+        const g = parseInt(hex.slice(3, 5), 16)
+        const b = parseInt(hex.slice(5, 7), 16)
+        return [r, g, b]
+      }
+
+      const COLOR_PALETTE_1 = ['#c1c1c1', '#a7a7a7', '#8e8e8e', '#747474', '#5b5b5b'].map(parseColor)
+      const COLOR_PALETTE_2 = ['#5EE6CD', '#129A81', '#008067', '#00674E', '#004D34'].map(parseColor)
 
       let centerX
       let centerY
@@ -122,16 +129,30 @@
         return pixels
       }
 
-      const pixelate = (layer, pixels, colorPalette) => {
-        pixels.forEach(pixel => {
-          shape.rectangle(layer, {
-            x: pixel[0] + 1,
-            y: pixel[1] + 1,
-            width: PIXEL_SIZE - 1,
-            height: PIXEL_SIZE - 1,
-            fillStyle: colorPalette[rnd(0, colorPalette.length - 1)]
-          })
-        })
+      // Performance: Direct ImageData manipulation instead of thousands of fillRect calls
+      const pixelateToImageData = (imageData, pixels, colorPalette, pixelSize, canvasWidth) => {
+        const data = imageData.data
+        const paletteLen = colorPalette.length
+        const actualSize = pixelSize - 1
+
+        for (let p = 0; p < pixels.length; p++) {
+          const px = pixels[p][0] + 1
+          const py = pixels[p][1] + 1
+          const color = colorPalette[(Math.random() * paletteLen) | 0]
+          const r = color[0], g = color[1], b = color[2]
+
+          // Fill the pixel block directly in ImageData
+          for (let dy = 0; dy < actualSize; dy++) {
+            const rowOffset = ((py + dy) * canvasWidth + px) * 4
+            for (let dx = 0; dx < actualSize; dx++) {
+              const idx = rowOffset + dx * 4
+              data[idx] = r
+              data[idx + 1] = g
+              data[idx + 2] = b
+              data[idx + 3] = 255
+            }
+          }
+        }
       }
 
       let background
@@ -139,6 +160,7 @@
       let outerCircle
       let innerCircle
       let pie
+      let imageData
 
       let stop = false
       const init = () => {
@@ -161,6 +183,10 @@
         }
 
         pixelLayer = layer().create('pixels')
+
+        // Pre-allocate ImageData buffer for direct pixel manipulation
+        imageData = pixelLayer.ctx.createImageData(windowWidth, windowHeight)
+
         outerCircle = makeOuterCircle()
         innerCircle = makeInnerCircle()
         pie = makePie()
@@ -170,9 +196,19 @@
       }
 
       const paint = () => {
-        pixelate(pixelLayer, outerCircle, COLOR_PALETTE_2)
-        pixelate(pixelLayer, innerCircle, COLOR_PALETTE_1)
-        pixelate(pixelLayer, pie, COLOR_PALETTE_2)
+        // Clear ImageData buffer (set all alpha to 0)
+        const data = imageData.data
+        for (let i = 3; i < data.length; i += 4) {
+          data[i] = 0
+        }
+
+        // Render all pixels directly to ImageData buffer
+        pixelateToImageData(imageData, outerCircle, COLOR_PALETTE_2, PIXEL_SIZE, windowWidth)
+        pixelateToImageData(imageData, innerCircle, COLOR_PALETTE_1, PIXEL_SIZE, windowWidth)
+        pixelateToImageData(imageData, pie, COLOR_PALETTE_2, PIXEL_SIZE, windowWidth)
+
+        // Single putImageData call instead of thousands of fillRect
+        pixelLayer.ctx.putImageData(imageData, 0, 0)
       }
 
       let lastFrameTime = 0
@@ -191,7 +227,14 @@
         lastFrameTime = elapsedTime
       }
 
-      window.addEventListener('resize', init)
+      // Debounce resize handler to prevent excessive reinitialization
+      let resizeTimeout
+      const debouncedInit = () => {
+        clearTimeout(resizeTimeout)
+        resizeTimeout = setTimeout(init, 100)
+      }
+
+      window.addEventListener('resize', debouncedInit)
       init()
     })()
   </script>

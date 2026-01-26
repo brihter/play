@@ -32,8 +32,14 @@ const layer = () => {
     element.style.top = 0
     element.style.left = 0
 
-    let ctx = element.getContext('2d')
-    ctx = Object.assign(ctx, cfg)
+    const ctx = element.getContext('2d')
+
+    // Apply config properties directly instead of Object.assign
+    if (cfg) {
+      for (const key in cfg) {
+        ctx[key] = cfg[key]
+      }
+    }
 
     document.body.appendChild(element)
 
