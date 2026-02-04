@@ -1,14 +1,16 @@
-# brihter/play.git
+---
+title: brihter/play.git
+---
 
-https://brihter.github.io/play/
+# brihter/play.git
 
 ## experiments
 
-- [game of life](https://brihter.github.io/play/game-of-life/)
-- cascading [text grid](https://brihter.github.io/play/grid-text/) animation
-- html canvas inspired by reddit's [/r/place](https://brihter.github.io/play/place/)
-- [memento mori](https://brihter.github.io/play/memento-mori/)
-- [izvir](https://brihter.github.io/play/izvir/)
-- [grid lines](https://brihter.github.io/play/grid-lines/)
-- image [unshredder](https://brihter.github.io/play/unshredder/)
-- an on scroll [background blur](https://brihter.github.io/play/www-background-blur/)
+- [game of life](game-of-life/)
+- cascading [text grid](grid-text/) animation
+- html canvas inspired by reddit's [/r/place](place/)
+- [memento mori](memento-mori/)
+- [izvir](izvir/)
+- [grid lines](grid-lines/)
+- image [unshredder](unshredder/)
+- an on scroll [background blur](www-background-blur/)
